@@ -1,0 +1,92 @@
+export const MOCK_APIFY_RESULTS = [
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80",
+    "marketplace_listing_title": "2007 Toyota FJ Cruiser · White",
+    "listingUrl": "https://www.facebook.com/marketplace/item/826322413498582",
+    "listing_price.formatted_amount": "$12,000",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80",
+    "marketplace_listing_title": "1994 Geo Tracker · Convertible Sport Utility 2D",
+    "listingUrl": "https://www.facebook.com/marketplace/item/1993438021244170",
+    "listing_price.formatted_amount": "$2,900",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80",
+    "marketplace_listing_title": "2003 MINI Cooper",
+    "listingUrl": "https://www.facebook.com/marketplace/item/942168448687533",
+    "listing_price.formatted_amount": "$2,300",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&q=80",
+    "marketplace_listing_title": "1966 Ford Mustang · Coupe 2D",
+    "listingUrl": "https://www.facebook.com/marketplace/item/1690183458652986",
+    "listing_price.formatted_amount": "$21,000",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=80",
+    "marketplace_listing_title": "1970 Volkswagen bus",
+    "listingUrl": "https://www.facebook.com/marketplace/item/1331092588881576",
+    "listing_price.formatted_amount": "$6,500",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=600&q=80",
+    "marketplace_listing_title": "2006 Jaguar XJ · XJ8 L Sedan 4D",
+    "listingUrl": "https://www.facebook.com/marketplace/item/1947465702799228",
+    "listing_price.formatted_amount": "$5,900",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1541348263662-e068662d82af?w=600&q=80",
+    "marketplace_listing_title": "2000 Chevrolet 1500 Regular Cab · Short Bed",
+    "listingUrl": "https://www.facebook.com/marketplace/item/1015852197635857",
+    "listing_price.formatted_amount": "$1,100",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+    "marketplace_listing_title": "2006 Mercedes-Benz CLS · CLS55 AMG",
+    "listingUrl": "https://www.facebook.com/marketplace/item/954809220787678",
+    "listing_price.formatted_amount": "$5,500",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=600&q=80",
+    "marketplace_listing_title": "2011 Subaru Legacy · 2.5 GT Sedan 4D",
+    "listingUrl": "https://www.facebook.com/marketplace/item/2185048169002470",
+    "listing_price.formatted_amount": "$1,000",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&q=80",
+    "marketplace_listing_title": "2011 Ford Mustang · V6 Coupe 2D",
+    "listingUrl": "https://www.facebook.com/marketplace/item/1746279420119560",
+    "listing_price.formatted_amount": "$2,999",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&q=80",
+    "marketplace_listing_title": "2015 Chevrolet Malibu · LT Sedan 4D",
+    "listingUrl": "https://www.facebook.com/marketplace/item/1628872698344035",
+    "listing_price.formatted_amount": "$3,000",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1520031441872-265e4ff70366?w=600&q=80",
+    "marketplace_listing_title": "2017 Toyota Camry Hybrid · LE Sedan 4D",
+    "listingUrl": "https://www.facebook.com/marketplace/item/1306406958219710",
+    "listing_price.formatted_amount": "$11,500",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1532581140115-3e355d1ed1de?w=600&q=80",
+    "marketplace_listing_title": "2007 BMW 3 Series · 328i Coupe 2D",
+    "listingUrl": "https://www.facebook.com/marketplace/item/1285648993736978",
+    "listing_price.formatted_amount": "$3,500",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80",
+    "marketplace_listing_title": "2017 Subaru WRX · WRX",
+    "listingUrl": "https://www.facebook.com/marketplace/item/2512344335892840",
+    "listing_price.formatted_amount": "$4,500",
+  },
+  {
+    "primary_listing_photo.photo_image_url": "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80",
+    "marketplace_listing_title": "2013 Audi A8 · 3.0T Sedan 4D",
+    "listingUrl": "https://www.facebook.com/marketplace/item/2082691492300950",
+    "listing_price.formatted_amount": "$9,500",
+  },
+];
