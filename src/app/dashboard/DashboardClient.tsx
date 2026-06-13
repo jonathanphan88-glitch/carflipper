@@ -11,6 +11,8 @@ import { exportListingsPdf } from "@/lib/exportPdf";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
+const SHOW_FLAGGED_TAB = false;
+
 const DEFAULT_FILTERS: Filters = {
   priceMin: 0,
   priceMax: 30000,
@@ -101,7 +103,7 @@ export function DashboardClient({ initialSettings }: DashboardClientProps) {
     { id: "saved", label: "Saved" },
     { id: "dismissed", label: "Dismissed" },
     { id: "all", label: "All" },
-    { id: "flagged", label: "Flagged" },
+    ...(SHOW_FLAGGED_TAB ? [{ id: "flagged" as Tab, label: "Flagged" }] : []),
   ];
 
   return (
