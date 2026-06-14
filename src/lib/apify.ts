@@ -19,41 +19,190 @@ interface ApifyRunResponse {
   data: { id: string; status: string; defaultDatasetId: string };
 }
 
-// Resolve a zip code to "City, State" using OpenStreetMap Nominatim
-async function resolveZipToCity(zip: string): Promise<string> {
+// Resolve a zip code to city + state using OpenStreetMap Nominatim
+async function resolveZipToCity(zip: string): Promise<{ city: string; state: string }> {
   const res = await fetch(
     `https://nominatim.openstreetmap.org/search?postalcode=${zip}&country=US&format=json&limit=1&addressdetails=1`,
     { headers: { "User-Agent": "car-flip-finder/1.0" } }
   );
-  if (!res.ok) return zip;
-  const data = await res.json() as Array<{ display_name?: string; address?: { city?: string; town?: string; county?: string; state?: string } }>;
-  if (!data.length) return zip;
+  if (!res.ok) return { city: zip, state: "" };
+  const data = await res.json() as Array<{ address?: { city?: string; town?: string; village?: string; county?: string; state?: string } }>;
+  if (!data.length) return { city: zip, state: "" };
   const addr = data[0].address;
-  const city = addr?.city ?? addr?.town ?? addr?.county ?? "";
+  const city = addr?.city ?? addr?.town ?? addr?.village ?? addr?.county ?? "";
   const state = addr?.state ?? "";
-  return city && state ? `${city}, ${state}` : zip;
+  return { city, state };
 }
 
-// Facebook uses abbreviated slugs for some cities
+// Facebook Marketplace city slugs — many cities don't have dedicated FB pages,
+// so we map them to the nearest metro that does.
 const CITY_SLUG_OVERRIDES: Record<string, string> = {
+  // California — Los Angeles metro
   "los angeles": "la",
+  "santa monica": "la",
+  "long beach": "la",
+  "pasadena": "la",
+  "burbank": "la",
+  "glendale": "la",
+  "torrance": "la",
+  "inglewood": "la",
+  "compton": "la",
+  "hawthorne": "la",
+  "el monte": "la",
+  "pomona": "la",
+  "west covina": "la",
+  "norwalk": "la",
+  "downey": "la",
+  "costa mesa": "orangecounty",
+  "santa ana": "orangecounty",
+  "anaheim": "orangecounty",
+  "irvine": "orangecounty",
+  "huntington beach": "orangecounty",
+  "garden grove": "orangecounty",
+  "fullerton": "orangecounty",
+  "orange": "orangecounty",
+  "mission viejo": "orangecounty",
+  "newport beach": "orangecounty",
+  // California — Bay Area
+  "san francisco": "sanfrancisco",
+  "sf": "sanfrancisco",
+  "oakland": "sfbayarea",
+  "berkeley": "sfbayarea",
+  "fremont": "sfbayarea",
+  "hayward": "sfbayarea",
+  "san jose": "sanjose",
+  "sunnyvale": "sanjose",
+  "santa clara": "sanjose",
+  "mountain view": "sanjose",
+  "palo alto": "sanjose",
+  // California — other
+  "san diego": "sandiego",
+  "sacramento": "sacramento",
+  "fresno": "fresno",
+  "stockton": "stockton",
+  "bakersfield": "bakersfield",
+  "riverside": "inlandempire",
+  "san bernardino": "inlandempire",
+  "ontario": "inlandempire",
+  "rancho cucamonga": "inlandempire",
+  // New York
   "new york": "nyc",
   "new york city": "nyc",
+  "brooklyn": "nyc",
+  "queens": "nyc",
+  "bronx": "nyc",
+  "staten island": "nyc",
+  "jersey city": "nyc",
+  "newark": "nyc",
+  // Texas
+  "dallas": "dallas",
+  "fort worth": "dallas",
+  "arlington": "dallas",
+  "houston": "houston",
+  "austin": "austin",
+  "san antonio": "sanantonio",
+  // Florida
+  "miami": "miami",
+  "hialeah": "miami",
+  "fort lauderdale": "miami",
+  "orlando": "orlando",
+  "tampa": "tampa",
+  "jacksonville": "jacksonville",
+  // Illinois
+  "chicago": "chicago",
+  // Arizona
+  "phoenix": "phoenix",
+  "scottsdale": "phoenix",
+  "tempe": "phoenix",
+  "mesa": "phoenix",
+  "chandler": "phoenix",
+  "tucson": "tucson",
+  // Nevada
   "las vegas": "vegas",
+  "henderson": "vegas",
+  "north las vegas": "vegas",
+  // Washington
+  "seattle": "seattle",
+  "bellevue": "seattle",
+  "tacoma": "seattle",
+  // Georgia
+  "atlanta": "atlanta",
+  // Colorado
+  "denver": "denver",
+  "aurora": "denver",
+  "colorado springs": "coloradosprings",
+  // Massachusetts
+  "boston": "boston",
+  // Michigan
+  "detroit": "detroit",
+  // Pennsylvania
+  "philadelphia": "philadelphia",
+  // Ohio
+  "columbus": "columbus",
+  "cleveland": "cleveland",
+  // North Carolina
+  "charlotte": "charlotte",
+  "raleigh": "raleigh",
 };
 
-function toFacebookCitySlug(location: string): string {
-  const city = location.split(",")[0].toLowerCase().trim();
-  return CITY_SLUG_OVERRIDES[city] ?? city.replace(/\s+/g, "");
+// When a city has no known FB slug, fall back to that state's main metro
+const STATE_SLUG_FALLBACKS: Record<string, string> = {
+  "california": "la",
+  "new york": "nyc",
+  "texas": "dallas",
+  "florida": "miami",
+  "illinois": "chicago",
+  "arizona": "phoenix",
+  "nevada": "vegas",
+  "washington": "seattle",
+  "georgia": "atlanta",
+  "colorado": "denver",
+  "massachusetts": "boston",
+  "michigan": "detroit",
+  "pennsylvania": "philadelphia",
+  "ohio": "columbus",
+  "north carolina": "charlotte",
+  "virginia": "washington",
+  "maryland": "washington",
+  "new jersey": "nyc",
+  "connecticut": "nyc",
+  "oregon": "portland",
+  "minnesota": "minneapolis",
+  "missouri": "stlouis",
+  "tennessee": "nashville",
+  "indiana": "indianapolis",
+  "wisconsin": "milwaukee",
+};
+
+function toFacebookCitySlug(city: string, state: string): string {
+  const cityLower = city.toLowerCase().trim();
+  const stateLower = state.toLowerCase().trim();
+
+  // Direct city override
+  if (CITY_SLUG_OVERRIDES[cityLower]) return CITY_SLUG_OVERRIDES[cityLower];
+
+  // State fallback for unrecognized cities
+  if (STATE_SLUG_FALLBACKS[stateLower]) return STATE_SLUG_FALLBACKS[stateLower];
+
+  // Last resort: slugify the city name
+  return cityLower.replace(/\s+/g, "");
 }
 
 // Build a Facebook Marketplace vehicles URL with price filters
 async function buildMarketplaceUrl(location: string, priceMin: number, priceMax: number): Promise<string> {
-  const cityName = /^\d{5}$/.test(location.trim())
-    ? await resolveZipToCity(location.trim())
-    : location;
-  const slug = toFacebookCitySlug(cityName);
-  console.log(`[apify] location "${location}" → "${cityName}" → slug "${slug}"`);
+  let city: string;
+  let state: string;
+
+  if (/^\d{5}$/.test(location.trim())) {
+    ({ city, state } = await resolveZipToCity(location.trim()));
+  } else {
+    const parts = location.split(",");
+    city = parts[0]?.trim() ?? location;
+    state = parts[1]?.trim() ?? "";
+  }
+
+  const slug = toFacebookCitySlug(city, state);
+  console.log(`[apify] location "${location}" → city="${city}" state="${state}" → slug "${slug}"`);
   const params = new URLSearchParams({
     minPrice: String(priceMin),
     maxPrice: String(priceMax),
