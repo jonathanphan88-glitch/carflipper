@@ -54,7 +54,7 @@ const CITY_SLUG_OVERRIDES: Record<string, string> = {
   "norwalk": "la",
   "downey": "la",
   "costa mesa": "orangecounty",
-  "santa ana": "orangecounty",
+  "santa ana": "108337745853447",
   "anaheim": "orangecounty",
   "irvine": "orangecounty",
   "huntington beach": "orangecounty",
