@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { waitUntil } from "@vercel/functions";
+
+export const maxDuration = 300; // 5 minutes — scan can take a while
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { runFacebookMarketplaceScraper, getRunStatus, getRunResults, type ApifyListing } from "@/lib/apify";
 import { MOCK_APIFY_RESULTS } from "@/lib/apify.mock";
@@ -59,8 +62,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to create search run" }, { status: 500 });
   }
 
-  // Kick off scrape asynchronously using current location/radius from request
-  processSearch(searchRun.id, user.id, { ...settings, location, radius_miles: radius }, serviceClient);
+  // Kick off scrape asynchronously — waitUntil keeps the Vercel function alive until it finishes
+  waitUntil(processSearch(searchRun.id, user.id, { ...settings, location, radius_miles: radius }, serviceClient));
 
   return NextResponse.json({ runId: searchRun.id, status: "running" });
 }
