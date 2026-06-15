@@ -207,7 +207,7 @@ async function buildMarketplaceUrl(location: string, priceMin: number, priceMax:
     minPrice: String(priceMin),
     maxPrice: String(priceMax),
   });
-  return `https://www.facebook.com/marketplace/${slug}/vehicles/?${params}`;
+  return `https://www.facebook.com/marketplace/${slug}/vehicles/cars-trucks/?${params}`;
 }
 
 export async function runFacebookMarketplaceScraper(params: {
