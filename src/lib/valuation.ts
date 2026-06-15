@@ -65,9 +65,15 @@ export async function evaluateListing(params: {
 
 (1) PESSIMISTIC REPAIR RULE: any mechanical, electrical, or drivability issues → use high-end OEM parts + professional labor costs. Hidden issues compound; protect downside by default.
 
-(2) MILEAGE MARGIN CAP: over 150k miles → aggressively cap the resale ceiling. Never project profit exceeding $2,000–$3,000 on 150k+ mile vehicles unless purchase price is near zero.
+(2) MILEAGE IS THE SINGLE MOST IMPORTANT DISCOUNT FACTOR. Apply these tiers aggressively — do not soften them for brand reputation:
+- 100k–130k miles: subtract 20–25% from base market value
+- 130k–150k miles: subtract 30–35% from base market value
+- 150k–175k miles: subtract 40–50% from base market value. Hard profit cap of $2,000–$3,000 maximum.
+- 175k–200k miles: subtract 50–60%. Retail buyers will not pay a premium. Hard profit cap of $1,000–$1,500.
+- 200k+ miles: subtract 60–70%. These vehicles are approaching end of retail life. Hard profit cap of $500–$1,000 unless priced near zero.
+Even Toyota, Honda, and Lexus are subject to these caps — reliability reputation does NOT override buyer psychology at high mileage. A 200k mile Camry is still a hard sell regardless of how well it runs.
 
-(3) VALUE MIDDLEMAN REALITY CHECK: high-mileage reliable vehicles (Toyota, Honda, Lexus) retain a cash floor. Recognize a genuine micro-deal ($500 under floor) vs. a poor deal.
+(3) VALUE MIDDLEMAN REALITY CHECK: high-mileage reliable vehicles (Toyota, Honda, Lexus) retain a cash floor. Recognize a genuine micro-deal ($500 under floor) vs. a poor deal. But do not let reliability reputation inflate the value beyond the mileage tier caps above.
 
 (4) COSMETIC CONDITION DISCOUNT: visible cosmetic damage has a real impact on resale speed and price. Heavy paint fading, scratched/dented panels, worn interior, or "beater grade" appearance signals a car that will only sell to bottom-of-market buyers. Apply a meaningful discount (15–30%) vs. a clean equivalent — a cosmetically rough car is not worth the same as a clean one even if it runs fine.
 
@@ -103,7 +109,7 @@ SKIP the listing (set skip_reason) if any of the following apply:
 - Listing is selling a car PART or accessory, not the vehicle itself
 VALUATION RULES (for listings that pass the skip check):
 1. PESSIMISTIC REPAIR: any mentioned mechanical/electrical issue → use worst-case repair cost (OEM parts + shop labor). Issues compound.
-2. MILEAGE CAP: 150k+ miles → hard cap on resale ceiling, max $2–3k projected profit regardless of brand.
+2. MILEAGE IS THE #1 DISCOUNT FACTOR — apply tiered discounts regardless of brand: 100–130k = -20–25%, 130–150k = -30–35%, 150–175k = -40–50% (max $2–3k profit), 175–200k = -50–60% (max $1–1.5k profit), 200k+ = -60–70% (max $500–1k profit). Toyota/Honda/Lexus reliability does NOT override these tiers.
 3. CASH FLOOR: reliable high-mileage vehicles (Toyota, Honda, Lexus) retain a floor value — recognize a micro-deal priced just under that floor.
 4. COSMETIC DISCOUNT: heavy paint fade, body damage, worn interior, or beater-grade appearance → 15–30% discount vs. a clean equivalent. Cosmetically rough cars only sell to bottom-of-market buyers at reduced prices.
 5. NICHE PENALTY: luxury brands, sports cars, and uncommon models have a smaller buyer pool and take longer to sell → compress margin expectations vs. high-demand economy cars (Camry, Civic, CR-V).
