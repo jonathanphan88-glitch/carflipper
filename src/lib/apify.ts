@@ -228,7 +228,7 @@ export async function runFacebookMarketplaceScraper(params: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         startUrls: [{ url }],
-        resultsLimit: 60,
+        resultsLimit: 100,
         includeListingDetails: true,
       }),
     }
