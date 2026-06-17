@@ -131,20 +131,16 @@ async function processSearch(
 
     console.log("[search] processing", rawListings.length, "listings");
 
+    // Pre-filter without LLM (cheap checks first)
+    const toEvaluate: Array<{ raw: ApifyListing; conditionText: string }> = [];
     for (const raw of rawListings) {
-      if (!raw.description) console.log("[search] no description:", raw.title);
-      if (!raw.year) console.log("[search] no year:", raw.title);
-
       if (raw.year && raw.year < 2000) {
-        console.log("[search] skip (too old):", raw.title, "year:", raw.year);
         addFlagged(runId, { title: raw.title, price: raw.price, url: raw.url, reason: "too old" });
         skippedTooOld++;
         continue;
       }
-
       const conditionText = [raw.title, raw.description].filter(Boolean).join(" ");
       const conditionLower = conditionText.toLowerCase();
-
       const SALVAGE_PHRASES = ["salvage", "rebuilt title", "junk title", "branded title", "flood title"];
       const matchedSalvage = SALVAGE_PHRASES.find((kw) => conditionLower.includes(kw));
       if (matchedSalvage) {
@@ -153,89 +149,95 @@ async function processSearch(
         skippedSalvage++;
         continue;
       }
+      toEvaluate.push({ raw, conditionText });
+    }
 
-      const evaluation = await evaluateListing({
-        title: raw.title,
-        year: raw.year,
-        make: raw.make,
-        model: raw.model,
-        mileage: raw.mileage,
-        price: raw.price,
-        description: raw.description,
-      });
+    console.log(`[search] pre-filter done. ${toEvaluate.length} listings queued for LLM`);
 
-      if (evaluation.skip) {
-        console.log(`[search] skip (${evaluation.reason}):`, raw.title);
-        addFlagged(runId, { title: raw.title, price: raw.price, url: raw.url, reason: evaluation.reason });
-        skippedLlm++;
-        continue;
-      }
+    // Evaluate in parallel batches of 8
+    const BATCH_SIZE = 8;
+    for (let i = 0; i < toEvaluate.length; i += BATCH_SIZE) {
+      const batch = toEvaluate.slice(i, i + BATCH_SIZE);
+      await Promise.all(batch.map(async ({ raw, conditionText }) => {
+        const evaluation = await evaluateListing({
+          title: raw.title,
+          year: raw.year,
+          make: raw.make,
+          model: raw.model,
+          mileage: raw.mileage,
+          price: raw.price,
+          description: raw.description,
+        });
 
-      if (!raw.price) {
-        console.log("[search] skip (no price):", raw.title, "| raw price field:", raw.price);
-        addFlagged(runId, { title: raw.title, price: null, url: raw.url, reason: "no price" });
-        skippedNoPrice++;
-        continue;
-      }
+        if (evaluation.skip) {
+          console.log(`[search] skip (${evaluation.reason}):`, raw.title);
+          addFlagged(runId, { title: raw.title, price: raw.price, url: raw.url, reason: evaluation.reason });
+          skippedLlm++;
+          return;
+        }
 
-      const marketValue = evaluation.marketValue;
-      const estimatedProfit = marketValue ? marketValue - raw.price : null;
+        if (!raw.price) {
+          console.log("[search] skip (no price):", raw.title);
+          addFlagged(runId, { title: raw.title, price: null, url: raw.url, reason: "no price" });
+          skippedNoPrice++;
+          return;
+        }
 
-      const score = computeScore({
-        price: raw.price,
-        marketValue,
-        mileage: raw.mileage,
-        year: raw.year,
-        conditionText: conditionText || null,
-      });
+        const marketValue = evaluation.marketValue;
+        const estimatedProfit = marketValue ? marketValue - raw.price : null;
+        const score = computeScore({
+          price: raw.price,
+          marketValue,
+          mileage: raw.mileage,
+          year: raw.year,
+          conditionText: conditionText || null,
+        });
 
-      // Upsert listing (deduplicate by apify_id)
-      const { data: listing, error: listingError } = await serviceClient
-        .from("listings")
-        .upsert(
-          {
-            apify_id: raw.id,
-            url: raw.url,
-            title: raw.title,
-            price: raw.price,
-            year: raw.year,
-            make: raw.make,
-            model: raw.model,
-            mileage: raw.mileage,
-            condition_text: conditionText.slice(0, 2000),
-            location: raw.location,
-            images: raw.images.slice(0, 10),
-            listed_at: raw.listedAt,
-            fetched_at: new Date().toISOString(),
-            market_value: marketValue,
-            estimated_profit: estimatedProfit,
-            score,
-            raw_json: { ...raw, _llm_justification: evaluation.justification },
-          },
-          { onConflict: "apify_id" }
-        )
-        .select()
-        .single();
+        const { data: listing, error: listingError } = await serviceClient
+          .from("listings")
+          .upsert(
+            {
+              apify_id: raw.id,
+              url: raw.url,
+              title: raw.title,
+              price: raw.price,
+              year: raw.year,
+              make: raw.make,
+              model: raw.model,
+              mileage: raw.mileage,
+              condition_text: conditionText.slice(0, 2000),
+              location: raw.location,
+              images: raw.images.slice(0, 10),
+              listed_at: raw.listedAt,
+              fetched_at: new Date().toISOString(),
+              market_value: marketValue,
+              estimated_profit: estimatedProfit,
+              score,
+              raw_json: { ...raw, _llm_justification: evaluation.justification },
+            },
+            { onConflict: "apify_id" }
+          )
+          .select()
+          .single();
 
-      if (listingError || !listing) {
-        console.log("[search] upsert failed:", listingError?.message, "title:", raw.title);
-        continue;
-      }
-      listingsFound++;
+        if (listingError || !listing) {
+          console.log("[search] upsert failed:", listingError?.message, "title:", raw.title);
+          return;
+        }
+        listingsFound++;
 
-      // Create user_listing_state if it doesn't exist (new listing for this user)
-      const { error: stateError } = await serviceClient
-        .from("user_listing_states")
-        .insert({ user_id: userId, listing_id: listing.id, status: "new" })
-        .select()
-        .single();
+        const { error: stateError } = await serviceClient
+          .from("user_listing_states")
+          .insert({ user_id: userId, listing_id: listing.id, status: "new" })
+          .select()
+          .single();
 
-      // 23505 = unique_violation: state already exists, not an error we care about
-      if (!stateError) {
-        listingsNew++;
-      } else if (stateError.code !== "23505") {
-        console.log("[search] state insert failed:", stateError.message, "listing:", listing.id);
-      }
+        if (!stateError) {
+          listingsNew++;
+        } else if (stateError.code !== "23505") {
+          console.log("[search] state insert failed:", stateError.message, "listing:", listing.id);
+        }
+      }));
     }
 
     await serviceClient
