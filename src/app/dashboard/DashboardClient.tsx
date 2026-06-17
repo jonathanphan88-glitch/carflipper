@@ -15,7 +15,7 @@ const SHOW_FLAGGED_TAB = false;
 
 const DEFAULT_FILTERS: Filters = {
   priceMin: 0,
-  priceMax: 30000,
+  priceMax: 100000,
   minProfit: 0,
   minScore: 0,
   yearMin: 2000,

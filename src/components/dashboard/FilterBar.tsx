@@ -128,7 +128,7 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
             </span>
           </div>
           <Slider
-            min={0} max={50000} step={500}
+            min={0} max={100000} step={500}
             value={[filters.priceMin, filters.priceMax]}
             onValueChange={(v) => {
               const arr = Array.isArray(v) ? v : [v];
