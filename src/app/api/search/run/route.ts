@@ -152,12 +152,20 @@ async function processSearch(
       toEvaluate.push({ raw, conditionText });
     }
 
-    console.log(`[search] pre-filter done. ${toEvaluate.length} listings queued for LLM`);
+    // Skip listings already in the DB — no need to re-evaluate with LLM
+    const apifyIds = toEvaluate.map(({ raw }) => raw.id);
+    const { data: existingRows } = await serviceClient
+      .from("listings")
+      .select("apify_id")
+      .in("apify_id", apifyIds);
+    const existingIds = new Set((existingRows ?? []).map((r: { apify_id: string }) => r.apify_id));
+    const toEvaluateNew = toEvaluate.filter(({ raw }) => !existingIds.has(raw.id));
+    console.log(`[search] pre-filter done. ${toEvaluateNew.length} new listings queued for LLM (${existingIds.size} already known, skipped)`);
 
-    // Evaluate in parallel batches of 8
-    const BATCH_SIZE = 8;
-    for (let i = 0; i < toEvaluate.length; i += BATCH_SIZE) {
-      const batch = toEvaluate.slice(i, i + BATCH_SIZE);
+    // Evaluate in parallel batches of 15
+    const BATCH_SIZE = 15;
+    for (let i = 0; i < toEvaluateNew.length; i += BATCH_SIZE) {
+      const batch = toEvaluateNew.slice(i, i + BATCH_SIZE);
       await Promise.all(batch.map(async ({ raw, conditionText }) => {
         const evaluation = await evaluateListing({
           title: raw.title,
