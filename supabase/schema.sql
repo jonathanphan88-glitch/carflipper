@@ -122,3 +122,23 @@ create trigger user_settings_updated_at
 create trigger user_listing_states_updated_at
   before update on user_listing_states
   for each row execute function update_updated_at();
+
+-- Support messages
+create table if not exists support_messages (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references auth.users(id) on delete set null,
+  user_email text,
+  location_value text,
+  message text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table support_messages enable row level security;
+
+create policy "users can insert own support messages"
+  on support_messages for insert
+  with check (auth.uid() = user_id);
+
+create policy "service role can read all support messages"
+  on support_messages for select
+  using (true);

@@ -32,7 +32,7 @@ export function Navbar({ userEmail }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
 
         {/* Logo */}
-        <Link href="/dashboard" className="font-black text-base tracking-tight shrink-0">
+        <Link href="/dashboard" className="font-black text-2xl tracking-tight shrink-0">
           <span className="text-primary">Flip</span>
           <span className="text-white">Finder</span>
         </Link>

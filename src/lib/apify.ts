@@ -19,19 +19,21 @@ interface ApifyRunResponse {
   data: { id: string; status: string; defaultDatasetId: string };
 }
 
-// Resolve a zip code to city + state using OpenStreetMap Nominatim
-async function resolveZipToCity(zip: string): Promise<{ city: string; state: string }> {
+// Resolve a zip code to city, state, and coordinates using OpenStreetMap Nominatim
+async function resolveZipToCity(zip: string): Promise<{ city: string; state: string; lat: number | null; lon: number | null }> {
   const res = await fetch(
     `https://nominatim.openstreetmap.org/search?postalcode=${zip}&country=US&format=json&limit=1&addressdetails=1`,
     { headers: { "User-Agent": "car-flip-finder/1.0" } }
   );
-  if (!res.ok) return { city: zip, state: "" };
-  const data = await res.json() as Array<{ address?: { city?: string; town?: string; village?: string; county?: string; state?: string } }>;
-  if (!data.length) return { city: zip, state: "" };
+  if (!res.ok) return { city: zip, state: "", lat: null, lon: null };
+  const data = await res.json() as Array<{ lat?: string; lon?: string; address?: { city?: string; town?: string; village?: string; county?: string; state?: string } }>;
+  if (!data.length) return { city: zip, state: "", lat: null, lon: null };
   const addr = data[0].address;
   const city = addr?.city ?? addr?.town ?? addr?.village ?? addr?.county ?? "";
   const state = addr?.state ?? "";
-  return { city, state };
+  const lat = data[0].lat ? parseFloat(data[0].lat) : null;
+  const lon = data[0].lon ? parseFloat(data[0].lon) : null;
+  return { city, state, lat, lon };
 }
 
 // Facebook Marketplace city slugs — many cities don't have dedicated FB pages,
@@ -66,10 +68,10 @@ const CITY_SLUG_OVERRIDES: Record<string, string> = {
   // California — Bay Area
   "san francisco": "sanfrancisco",
   "sf": "sanfrancisco",
-  "oakland": "sfbayarea",
-  "berkeley": "sfbayarea",
-  "fremont": "sfbayarea",
-  "hayward": "sfbayarea",
+  "oakland": "sanfrancisco",
+  "berkeley": "sanfrancisco",
+  "fremont": "sanfrancisco",
+  "hayward": "sanfrancisco",
   "san jose": "sanjose",
   "sunnyvale": "sanjose",
   "santa clara": "sanjose",
@@ -77,7 +79,7 @@ const CITY_SLUG_OVERRIDES: Record<string, string> = {
   "palo alto": "sanjose",
   // California — other
   "san diego": "sandiego",
-  "sacramento": "sacramento",
+  "sacramento": "sac",
   "fresno": "fresno",
   "stockton": "stockton",
   "bakersfield": "bakersfield",
@@ -96,11 +98,12 @@ const CITY_SLUG_OVERRIDES: Record<string, string> = {
   "newark": "nyc",
   // Texas
   "dallas": "dallas",
-  "fort worth": "dallas",
-  "arlington": "dallas",
+  "fort worth": "fortworth",
+  "arlington": "arlington",
   "houston": "houston",
   "austin": "austin",
   "san antonio": "sanantonio",
+  "el paso": "elpaso",
   // Florida
   "miami": "miami",
   "hialeah": "miami",
@@ -136,13 +139,32 @@ const CITY_SLUG_OVERRIDES: Record<string, string> = {
   // Michigan
   "detroit": "detroit",
   // Pennsylvania
-  "philadelphia": "philadelphia",
+  "philadelphia": "philly",
+  "pittsburgh": "pittsburgh",
   // Ohio
   "columbus": "columbus",
   "cleveland": "cleveland",
+  "cincinnati": "cincinnati",
   // North Carolina
   "charlotte": "charlotte",
   "raleigh": "raleigh",
+  // Tennessee
+  "memphis": "memphis",
+  "nashville": "nashville",
+  // Louisiana
+  "new orleans": "neworleans",
+  // Missouri
+  "kansas city": "kansascity",
+  // Kentucky
+  "louisville": "louisville",
+  // Oklahoma
+  "oklahoma city": "oklahoma",
+  // Maryland / DC
+  "washington": "dc",
+  "washington dc": "dc",
+  "baltimore": "baltimore",
+  // Hawaii
+  "honolulu": "honolulu",
 };
 
 // When a city has no known FB slug, fall back to that state's main metro
@@ -159,11 +181,11 @@ const STATE_SLUG_FALLBACKS: Record<string, string> = {
   "colorado": "denver",
   "massachusetts": "boston",
   "michigan": "detroit",
-  "pennsylvania": "philadelphia",
+  "pennsylvania": "philly",
   "ohio": "columbus",
   "north carolina": "charlotte",
-  "virginia": "washington",
-  "maryland": "washington",
+  "virginia": "dc",
+  "maryland": "dc",
   "new jersey": "nyc",
   "connecticut": "nyc",
   "oregon": "portland",
@@ -174,35 +196,107 @@ const STATE_SLUG_FALLBACKS: Record<string, string> = {
   "wisconsin": "milwaukee",
 };
 
-function toFacebookCitySlug(city: string, state: string): string {
-  const cityLower = city.toLowerCase().trim();
-  const stateLower = state.toLowerCase().trim();
+// Known Facebook Marketplace slugs with coordinates for nearest-match fallback
+const SLUG_LOCATIONS: Array<{ slug: string; lat: number; lon: number }> = [
+  { slug: "la",             lat: 34.05,  lon: -118.24 },
+  { slug: "orangecounty",   lat: 33.71,  lon: -117.83 },
+  { slug: "sanfrancisco",   lat: 37.77,  lon: -122.42 },
+  { slug: "sanjose",        lat: 37.34,  lon: -121.89 },
+  { slug: "sandiego",       lat: 32.72,  lon: -117.16 },
+  { slug: "sac",            lat: 38.58,  lon: -121.49 },
+  { slug: "fresno",         lat: 36.74,  lon: -119.77 },
+  { slug: "stockton",       lat: 37.96,  lon: -121.29 },
+  { slug: "bakersfield",    lat: 35.37,  lon: -119.02 },
+  { slug: "inlandempire",   lat: 33.98,  lon: -117.37 },
+  { slug: "nyc",            lat: 40.71,  lon: -74.01  },
+  { slug: "dallas",         lat: 32.78,  lon: -96.80  },
+  { slug: "fortworth",      lat: 32.75,  lon: -97.33  },
+  { slug: "arlington",      lat: 32.74,  lon: -97.11  },
+  { slug: "houston",        lat: 29.76,  lon: -95.37  },
+  { slug: "austin",         lat: 30.27,  lon: -97.74  },
+  { slug: "sanantonio",     lat: 29.42,  lon: -98.49  },
+  { slug: "elpaso",         lat: 31.76,  lon: -106.49 },
+  { slug: "miami",          lat: 25.77,  lon: -80.19  },
+  { slug: "orlando",        lat: 28.54,  lon: -81.38  },
+  { slug: "tampa",          lat: 27.95,  lon: -82.46  },
+  { slug: "jacksonville",   lat: 30.33,  lon: -81.66  },
+  { slug: "chicago",        lat: 41.88,  lon: -87.63  },
+  { slug: "phoenix",        lat: 33.45,  lon: -112.07 },
+  { slug: "tucson",         lat: 32.22,  lon: -110.93 },
+  { slug: "vegas",          lat: 36.17,  lon: -115.14 },
+  { slug: "seattle",        lat: 47.61,  lon: -122.33 },
+  { slug: "portland",       lat: 45.52,  lon: -122.68 },
+  { slug: "atlanta",        lat: 33.75,  lon: -84.39  },
+  { slug: "denver",         lat: 39.74,  lon: -104.98 },
+  { slug: "coloradosprings",lat: 38.83,  lon: -104.82 },
+  { slug: "boston",         lat: 42.36,  lon: -71.06  },
+  { slug: "detroit",        lat: 42.33,  lon: -83.05  },
+  { slug: "philly",         lat: 39.95,  lon: -75.17  },
+  { slug: "pittsburgh",     lat: 40.44,  lon: -79.99  },
+  { slug: "columbus",       lat: 39.96,  lon: -82.99  },
+  { slug: "cleveland",      lat: 41.50,  lon: -81.69  },
+  { slug: "cincinnati",     lat: 39.10,  lon: -84.51  },
+  { slug: "charlotte",      lat: 35.23,  lon: -80.84  },
+  { slug: "raleigh",        lat: 35.78,  lon: -78.64  },
+  { slug: "memphis",        lat: 35.15,  lon: -90.05  },
+  { slug: "nashville",      lat: 36.17,  lon: -86.78  },
+  { slug: "neworleans",     lat: 29.95,  lon: -90.07  },
+  { slug: "kansascity",     lat: 39.10,  lon: -94.58  },
+  { slug: "louisville",     lat: 38.25,  lon: -85.76  },
+  { slug: "oklahoma",       lat: 35.47,  lon: -97.52  },
+  { slug: "dc",             lat: 38.91,  lon: -77.04  },
+  { slug: "baltimore",      lat: 39.29,  lon: -76.61  },
+  { slug: "honolulu",       lat: 21.31,  lon: -157.86 },
+  { slug: "minneapolis",    lat: 44.98,  lon: -93.27  },
+  { slug: "stlouis",        lat: 38.63,  lon: -90.20  },
+  { slug: "indianapolis",   lat: 39.77,  lon: -86.16  },
+  { slug: "milwaukee",      lat: 43.04,  lon: -87.91  },
+];
 
-  // Direct city override
-  if (CITY_SLUG_OVERRIDES[cityLower]) return CITY_SLUG_OVERRIDES[cityLower];
+function closestSlug(lat: number, lon: number): string {
+  let best = SLUG_LOCATIONS[0];
+  let bestDist = Infinity;
+  for (const loc of SLUG_LOCATIONS) {
+    const d = (lat - loc.lat) ** 2 + (lon - loc.lon) ** 2;
+    if (d < bestDist) { bestDist = d; best = loc; }
+  }
+  return best.slug;
+}
 
-  // State fallback for unrecognized cities
-  if (STATE_SLUG_FALLBACKS[stateLower]) return STATE_SLUG_FALLBACKS[stateLower];
+function toFacebookCitySlug(city: string): string | null {
+  return CITY_SLUG_OVERRIDES[city.toLowerCase().trim()] ?? null;
+}
 
-  // Last resort: slugify the city name
-  return cityLower.replace(/\s+/g, "");
+function stateSlug(state: string): string | null {
+  return STATE_SLUG_FALLBACKS[state.toLowerCase().trim()] ?? null;
 }
 
 // Build a Facebook Marketplace vehicles URL with price filters
 async function buildMarketplaceUrl(location: string, priceMin: number, priceMax: number): Promise<string> {
   let city: string;
   let state: string;
+  let lat: number | null = null;
+  let lon: number | null = null;
 
   if (/^\d{5}$/.test(location.trim())) {
-    ({ city, state } = await resolveZipToCity(location.trim()));
+    ({ city, state, lat, lon } = await resolveZipToCity(location.trim()));
   } else {
     const parts = location.split(",");
     city = parts[0]?.trim() ?? location;
     state = parts[1]?.trim() ?? "";
   }
 
-  const slug = toFacebookCitySlug(city, state);
-  console.log(`[apify] location "${location}" → city="${city}" state="${state}" → slug "${slug}"`);
+  // 1. Direct city name match
+  // 2. Closest known city by coordinates
+  // 3. State fallback
+  // 4. Slugify city name (last resort)
+  const slug =
+    toFacebookCitySlug(city) ??
+    (lat !== null && lon !== null ? closestSlug(lat, lon) : null) ??
+    stateSlug(state) ??
+    city.toLowerCase().replace(/\s+/g, "");
+
+  console.log(`[apify] location "${location}" → city="${city}" state="${state}" lat=${lat} lon=${lon} → slug "${slug}"`);
   const params = new URLSearchParams({
     minPrice: String(priceMin),
     maxPrice: String(priceMax),

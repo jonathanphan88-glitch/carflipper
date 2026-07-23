@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Flag, Car, MapPin, Download } from "lucide-r
 import type { ListingWithState, ListingStatus, UserSettings } from "@/lib/types";
 import type { FlaggedListing } from "@/lib/flaggedStore";
 import { exportListingsPdf } from "@/lib/exportPdf";
+import { HelpWidget } from "@/components/dashboard/HelpWidget";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -42,6 +43,7 @@ export function DashboardClient({ initialSettings }: DashboardClientProps) {
   const [page, setPage] = useState(1);
   const [flagged, setFlagged] = useState<FlaggedListing[]>([]);
   const [exporting, setExporting] = useState(false);
+  const [scanCount, setScanCount] = useState(0);
 
   const fetchListings = useCallback(async (tab: string, f: Filters, p: number) => {
     setFetching(true);
@@ -160,6 +162,7 @@ export function DashboardClient({ initialSettings }: DashboardClientProps) {
             onSearchComplete={(f) => {
               if (f) setFlagged((prev) => [...prev, ...f]);
               fetchListings(activeTab, filters, page);
+              setScanCount((c) => c + 1);
             }}
           />
         </div>
@@ -201,7 +204,7 @@ export function DashboardClient({ initialSettings }: DashboardClientProps) {
         <button
           onClick={handleExport}
           disabled={exporting}
-          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/15 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+          className="flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/15 disabled:opacity-40 disabled:pointer-events-none transition-colors"
         >
           <Download className="h-3.5 w-3.5" />
           {exporting ? "Exporting..." : "Download PDF"}
@@ -269,20 +272,22 @@ export function DashboardClient({ initialSettings }: DashboardClientProps) {
           <button
             disabled={page === 1}
             onClick={() => setPage((p) => p - 1)}
-            className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/15 disabled:opacity-25 disabled:pointer-events-none transition-colors"
+            className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/15 disabled:opacity-25 disabled:pointer-events-none transition-colors"
           >
             <ChevronLeft className="h-3.5 w-3.5" />Prev
           </button>
-          <span className="text-xs font-medium text-zinc-500">{page} / {totalPages}</span>
+          <span className="text-sm font-medium text-zinc-500">{page} / {totalPages}</span>
           <button
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/15 disabled:opacity-25 disabled:pointer-events-none transition-colors"
+            className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/15 disabled:opacity-25 disabled:pointer-events-none transition-colors"
           >
             Next<ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
       )}
+
+      <HelpWidget currentLocation={currentLocation} scanCount={scanCount} />
     </div>
   );
 }

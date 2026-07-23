@@ -85,19 +85,19 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
             <h3 className="font-bold text-base text-white leading-snug truncate">{displayTitle}</h3>
             <div className="flex items-center gap-3 mt-1.5 flex-wrap">
               {mileage && (
-                <span className="flex items-center gap-1.5 text-xs text-zinc-400">
+                <span className="flex items-center gap-1.5 text-sm text-zinc-400">
                   <Gauge className="h-3.5 w-3.5 text-zinc-500" />{mileage.toLocaleString()} mi
                 </span>
               )}
               {location && (
-                <span className="flex items-center gap-1.5 text-xs text-zinc-400">
+                <span className="flex items-center gap-1.5 text-sm text-zinc-400">
                   <MapPin className="h-3.5 w-3.5 text-zinc-500" />{location}
                 </span>
               )}
-              {listedAgo && <span className="text-xs text-zinc-600">{listedAgo}</span>}
+              {listedAgo && <span className="text-sm text-zinc-600">{listedAgo}</span>}
             </div>
           </div>
-          <span className={`shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg ring-1 ${sm.badgeBg} ${sm.badgeText} ${sm.badgeRing}`}>
+          <span className={`shrink-0 text-sm font-bold px-3 py-1.5 rounded-lg ring-1 ${sm.badgeBg} ${sm.badgeText} ${sm.badgeRing}`}>
             {sm.label}
           </span>
         </div>
@@ -148,7 +148,7 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
 
         {/* AI justification */}
         {justification && (
-          <p className="text-xs text-zinc-400 leading-relaxed border-l-2 border-zinc-700 pl-3 italic">
+          <p className="text-sm text-zinc-400 leading-relaxed border-l-2 border-zinc-700 pl-3 italic">
             {justification}
           </p>
         )}
@@ -156,7 +156,7 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
         {/* Actions */}
         <div className="flex items-center gap-2 pt-2 border-t border-white/[0.05]">
           <a href={url} target="_blank" rel="noopener noreferrer">
-            <button className="flex items-center gap-1.5 bg-primary hover:bg-primary/85 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors shadow-sm shadow-primary/20">
+            <button className="flex items-center gap-1.5 bg-primary hover:bg-primary/85 text-white text-sm font-bold px-4 py-2 rounded-lg transition-colors shadow-sm shadow-primary/20">
               View listing
               <ExternalLink className="h-3.5 w-3.5" />
             </button>
@@ -165,7 +165,7 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
           {status !== "saved" && (
             <button
               onClick={() => onStatusChange(id, "saved")}
-              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors"
+              className="flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-lg text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors"
             >
               <Bookmark className="h-3.5 w-3.5" />Save
             </button>
@@ -174,7 +174,7 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
           {status !== "dismissed" && (
             <button
               onClick={() => onStatusChange(id, "dismissed")}
-              className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg text-zinc-600 hover:text-zinc-300 hover:bg-white/[0.06] transition-colors"
+              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg text-zinc-600 hover:text-zinc-300 hover:bg-white/[0.06] transition-colors"
             >
               <X className="h-3.5 w-3.5" />Dismiss
             </button>
@@ -183,7 +183,7 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
           {(status === "saved" || status === "dismissed") && (
             <button
               onClick={() => onStatusChange(id, "new")}
-              className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg text-zinc-600 hover:text-zinc-300 hover:bg-white/[0.06] transition-colors"
+              className="flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg text-zinc-600 hover:text-zinc-300 hover:bg-white/[0.06] transition-colors"
             >
               <RotateCcw className="h-3.5 w-3.5" />Reset
             </button>
