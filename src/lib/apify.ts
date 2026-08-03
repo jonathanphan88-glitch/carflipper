@@ -51,6 +51,7 @@ const CITY_SLUG_OVERRIDES: Record<string, string> = {
   "compton": "la",
   "hawthorne": "la",
   "el monte": "la",
+  "south el monte": "111930512151251",
   "pomona": "la",
   "west covina": "la",
   "norwalk": "la",
@@ -148,6 +149,7 @@ const CITY_SLUG_OVERRIDES: Record<string, string> = {
   // North Carolina
   "charlotte": "charlotte",
   "raleigh": "raleigh",
+  "clayton": "112989765382129",
   // Tennessee
   "memphis": "memphis",
   "nashville": "nashville",
