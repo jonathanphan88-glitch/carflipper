@@ -49,12 +49,13 @@ export async function POST(request: NextRequest) {
   // Enforce 10-scan limit unless user is allowlisted
   const allowlisted = settings?.scan_allowlisted === true;
   if (!allowlisted) {
-    const { count: scanCount } = await supabase
+    const { data: scanRows } = await supabase
       .from("search_runs")
-      .select("*", { count: "exact", head: true })
+      .select("id")
       .eq("user_id", user.id);
-    if ((scanCount ?? 0) >= 10) {
-      return NextResponse.json({ error: "scan_limit_reached", scansUsed: scanCount ?? 0 }, { status: 403 });
+    const scanCount = scanRows?.length ?? 0;
+    if (scanCount >= 10) {
+      return NextResponse.json({ error: "scan_limit_reached", scansUsed: scanCount }, { status: 403 });
     }
   }
 
