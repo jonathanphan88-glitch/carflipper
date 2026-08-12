@@ -14,7 +14,7 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login">
-              <button className="text-sm font-medium text-zinc-400 hover:text-white transition-colors px-3 py-1.5">
+              <button className="text-base font-medium text-zinc-200 hover:text-white transition-colors px-3 py-1.5">
                 Sign in
               </button>
             </Link>
@@ -48,7 +48,7 @@ export default function LandingPage() {
               <span className="text-primary">Find the flip.</span>
             </h1>
 
-            <p className="text-lg text-zinc-400 max-w-lg mx-auto mb-10 leading-relaxed">
+            <p className="text-xl text-zinc-200 max-w-lg mx-auto mb-10 leading-relaxed">
               We score every car listing by profit potential, mileage, and condition.
               You only see the deals worth acting on.
             </p>
@@ -111,7 +111,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          <div className="mt-2 text-center text-xs text-zinc-600">Example listing from a real scan</div>
+          <div className="mt-2 text-center text-sm text-zinc-400">Example listing from a real scan</div>
         </section>
 
         {/* Features */}
@@ -141,11 +141,11 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                   {icon}
                 </div>
-                <h3 className="font-bold text-base text-white mb-2">{title}</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed mb-4">{desc}</p>
+                <h3 className="font-bold text-lg text-white mb-2">{title}</h3>
+                <p className="text-base text-zinc-300 leading-relaxed mb-4">{desc}</p>
                 <ul className="space-y-1.5">
                   {checks.map((c) => (
-                    <li key={c} className="flex items-center gap-2 text-xs text-zinc-500">
+                    <li key={c} className="flex items-center gap-2 text-sm text-zinc-400">
                       <Check className="h-3 w-3 text-primary shrink-0" />
                       {c}
                     </li>
@@ -163,7 +163,7 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent" />
             </div>
             <h2 className="text-4xl font-black tracking-tight mb-3">Ready to find your next flip?</h2>
-            <p className="text-zinc-400 mb-8 text-lg">Free to start. No credit card required.</p>
+            <p className="text-zinc-200 mb-8 text-xl">Free to start. No credit card required.</p>
             <Link href="/signup">
               <button className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-base font-black px-8 py-3.5 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.99] shadow-xl shadow-primary/20">
                 Get started free
@@ -174,7 +174,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/5 py-6 text-center text-xs text-zinc-600">
+      <footer className="border-t border-white/5 py-6 text-center text-sm text-zinc-400">
         © {new Date().getFullYear()} CarFlip
       </footer>
     </div>
