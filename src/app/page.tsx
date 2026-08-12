@@ -8,7 +8,7 @@ export default function LandingPage() {
       {/* Nav */}
       <nav className="border-b border-white/5 sticky top-0 z-50 bg-zinc-800/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="font-black text-lg tracking-tight">
+          <div className="font-black text-3xl tracking-tight">
             <span className="text-primary">Car</span>
             <span className="text-white">Flip</span>
           </div>
