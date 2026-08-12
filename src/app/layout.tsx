@@ -9,7 +9,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Car Flip Finder",
+  title: "CarFlip",
   description: "Find profitable car flipping deals on Facebook Marketplace",
 };
 

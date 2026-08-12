@@ -23,7 +23,7 @@ interface ApifyRunResponse {
 async function resolveZipToCity(zip: string): Promise<{ city: string; state: string; lat: number | null; lon: number | null }> {
   const res = await fetch(
     `https://nominatim.openstreetmap.org/search?postalcode=${zip}&country=US&format=json&limit=1&addressdetails=1`,
-    { headers: { "User-Agent": "car-flip-finder/1.0" } }
+    { headers: { "User-Agent": "carflip/1.0" } }
   );
   if (!res.ok) return { city: zip, state: "", lat: null, lon: null };
   const data = await res.json() as Array<{ lat?: string; lon?: string; address?: { city?: string; town?: string; village?: string; county?: string; state?: string } }>;

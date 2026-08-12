@@ -34,8 +34,8 @@ const [error, setError] = useState<string | null>(null);
       {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-between w-96 shrink-0 bg-zinc-700 border-r border-white/5 p-10">
         <div className="font-black text-xl tracking-tight">
-          <span className="text-primary">Flip</span>
-          <span className="text-white">Finder</span>
+          <span className="text-primary">Car</span>
+          <span className="text-white">Flip</span>
         </div>
 
         <div className="space-y-5">

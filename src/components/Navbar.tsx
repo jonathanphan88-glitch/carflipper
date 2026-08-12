@@ -33,8 +33,8 @@ export function Navbar({ userEmail }: NavbarProps) {
 
         {/* Logo */}
         <Link href="/dashboard" className="font-black text-2xl tracking-tight shrink-0">
-          <span className="text-primary">Flip</span>
-          <span className="text-white">Finder</span>
+          <span className="text-primary">Car</span>
+          <span className="text-white">Flip</span>
         </Link>
 
         {/* Nav links */}

@@ -61,8 +61,8 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
           <div className="lg:hidden font-black text-xl tracking-tight mb-8">
-            <span className="text-primary">Flip</span>
-            <span className="text-white">Finder</span>
+            <span className="text-primary">Car</span>
+            <span className="text-white">Flip</span>
           </div>
 
           <div className="mb-8">

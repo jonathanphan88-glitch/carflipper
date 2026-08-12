@@ -9,8 +9,8 @@ export default function LandingPage() {
       <nav className="border-b border-white/5 sticky top-0 z-50 bg-zinc-800/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="font-black text-lg tracking-tight">
-            <span className="text-primary">Flip</span>
-            <span className="text-white">Finder</span>
+            <span className="text-primary">Car</span>
+            <span className="text-white">Flip</span>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login">
@@ -175,7 +175,7 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t border-white/5 py-6 text-center text-xs text-zinc-600">
-        © {new Date().getFullYear()} FlipFinder
+        © {new Date().getFullYear()} CarFlip
       </footer>
     </div>
   );

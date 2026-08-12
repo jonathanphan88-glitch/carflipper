@@ -31,7 +31,7 @@ export async function exportListingsPdf(listings: ListingWithState[], sortLabel:
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("Car Flip Finder — Deal Export", MARGIN, 12);
+  doc.text("CarFlip — Deal Export", MARGIN, 12);
 
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");

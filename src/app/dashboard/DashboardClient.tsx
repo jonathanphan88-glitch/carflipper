@@ -125,7 +125,7 @@ export function DashboardClient({ initialSettings }: DashboardClientProps) {
                 <Car className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-3xl font-black tracking-tight text-white leading-none">Flip Finder</h1>
+                <h1 className="text-3xl font-black tracking-tight text-white leading-none">CarFlip</h1>
                 <p className="text-xs text-zinc-500 mt-0.5 font-medium">Facebook Marketplace · Auto Deals</p>
               </div>
             </div>
