@@ -174,6 +174,33 @@ async function processSearch(
     const toEvaluateNew = toEvaluate.filter(({ raw }) => !existingIds.has(raw.id));
     console.log(`[search] pre-filter done. ${toEvaluateNew.length} new listings queued for LLM (${existingIds.size} already known, skipped)`);
 
+    // Re-surface already-known listings as "new" for this user unless they saved/dismissed them
+    const existingApifyIds = toEvaluate.filter(({ raw }) => existingIds.has(raw.id)).map(({ raw }) => raw.id);
+    if (existingApifyIds.length > 0) {
+      const { data: existingListings } = await serviceClient
+        .from("listings")
+        .select("id")
+        .in("apify_id", existingApifyIds);
+      if (existingListings && existingListings.length > 0) {
+        const existingListingIds = existingListings.map((l: { id: string }) => l.id);
+        const { data: userStates } = await serviceClient
+          .from("user_listing_states")
+          .select("listing_id")
+          .eq("user_id", userId)
+          .in("listing_id", existingListingIds)
+          .in("status", ["saved", "dismissed"]);
+        const preserved = new Set((userStates ?? []).map((s: { listing_id: string }) => s.listing_id));
+        const toReAdd = existingListings
+          .filter((l: { id: string }) => !preserved.has(l.id))
+          .map((l: { id: string }) => ({ user_id: userId, listing_id: l.id, status: "new" }));
+        if (toReAdd.length > 0) {
+          await serviceClient.from("user_listing_states").insert(toReAdd);
+          listingsFound += toReAdd.length;
+          console.log(`[search] re-surfaced ${toReAdd.length} existing listings as new`);
+        }
+      }
+    }
+
     // Evaluate in parallel batches of 15
     const BATCH_SIZE = 15;
     for (let i = 0; i < toEvaluateNew.length; i += BATCH_SIZE) {
