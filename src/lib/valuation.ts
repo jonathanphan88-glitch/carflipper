@@ -147,7 +147,7 @@ Description: ${desc}`,
     }
 
     const marketValue = result.private_party_market_value > 0
-      ? Math.round(result.private_party_market_value * 0.75)
+      ? Math.round(result.private_party_market_value * 0.85)
       : null;
 
     if (!marketValue) {
