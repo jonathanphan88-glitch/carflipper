@@ -46,6 +46,18 @@ export async function POST(request: NextRequest) {
     { onConflict: "user_id" }
   );
 
+  // Enforce 10-scan limit unless user is allowlisted
+  const allowlisted = settings?.scan_allowlisted === true;
+  if (!allowlisted) {
+    const { count: scanCount } = await supabase
+      .from("search_runs")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id);
+    if ((scanCount ?? 0) >= 10) {
+      return NextResponse.json({ error: "scan_limit_reached", scansUsed: scanCount ?? 0 }, { status: 403 });
+    }
+  }
+
   const serviceClient = await createServiceClient();
 
   // Create a search run record

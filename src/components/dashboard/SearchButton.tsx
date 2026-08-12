@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Zap, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Zap, Loader2, AlertCircle, CheckCircle2, Send } from "lucide-react";
 import type { SearchRun } from "@/lib/types";
 import type { FlaggedListing } from "@/lib/flaggedStore";
 
@@ -30,6 +30,10 @@ export function SearchButton({ onSearchComplete, disabled, location, radius }: S
   const [stepLabel, setStepLabel] = useState(STATUS_STEPS[0].label);
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedRef = useRef(0);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewSent, setReviewSent] = useState(false);
 
   function startProgressSimulation() {
     elapsedRef.current = 0;
@@ -97,16 +101,81 @@ export function SearchButton({ onSearchComplete, disabled, location, radius }: S
     if (!res.ok) {
       const err = await res.json();
       stopProgressSimulation(false);
+      setLoading(false);
+      if (err.error === "scan_limit_reached") {
+        setStatus(null);
+        setShowLimitModal(true);
+        return;
+      }
       setStatus("failed");
       setErrorMsg(err.error ?? "Failed to start search");
-      setLoading(false);
       return;
     }
     const data = await res.json();
     setRunId(data.runId);
   }
 
+  async function handleReviewSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!reviewText.trim()) return;
+    setReviewSubmitting(true);
+    await fetch("/api/scan-review", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ review: reviewText }),
+    });
+    setReviewSubmitting(false);
+    setReviewSent(true);
+  }
+
   return (
+    <>
+    {showLimitModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="w-full max-w-md rounded-2xl border border-white/[0.08] bg-zinc-900 shadow-2xl shadow-black/60 overflow-hidden">
+          <div className="px-6 py-5 border-b border-white/[0.06] bg-zinc-800/60">
+            <h2 className="text-lg font-bold text-white">Scan limit reached</h2>
+            <p className="text-sm text-zinc-400 mt-1">You've used all 10 of your free scans.</p>
+          </div>
+          <div className="p-6 space-y-4">
+            {reviewSent ? (
+              <div className="flex flex-col items-center gap-3 py-4 text-center">
+                <CheckCircle2 className="h-10 w-10 text-emerald-400" />
+                <p className="text-base font-semibold text-white">Thanks for your feedback!</p>
+                <p className="text-sm text-zinc-400 leading-relaxed">We'll review your response and reach out to unlock more scans.</p>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-zinc-300 leading-relaxed">
+                  To unlock more scans, tell us about your experience with the app so far. We'll review your feedback and grant you additional access.
+                </p>
+                <form onSubmit={handleReviewSubmit} className="space-y-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Your experience</label>
+                    <textarea
+                      value={reviewText}
+                      onChange={(e) => setReviewText(e.target.value)}
+                      placeholder="Tell us how the app has been working for you, what deals you've found, any issues you've run into..."
+                      rows={4}
+                      required
+                      className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all resize-none"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={reviewSubmitting || !reviewText.trim()}
+                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:pointer-events-none text-white text-sm font-bold py-2.5 rounded-xl transition-colors"
+                  >
+                    <Send className="h-4 w-4" />
+                    {reviewSubmitting ? "Submitting..." : "Submit feedback"}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    )}
     <div className="flex flex-col items-start sm:items-end gap-3 min-w-[220px]">
       <button
         onClick={handleSearch}
@@ -152,5 +221,6 @@ export function SearchButton({ onSearchComplete, disabled, location, radius }: S
         </span>
       )}
     </div>
+    </>
   );
 }

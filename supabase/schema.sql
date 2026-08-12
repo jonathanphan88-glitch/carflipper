@@ -14,6 +14,7 @@ create table if not exists user_settings (
   min_profit integer not null default 1000,
   min_score integer not null default 50,
   email_alerts_enabled boolean not null default true,
+  scan_allowlisted boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -122,6 +123,25 @@ create trigger user_settings_updated_at
 create trigger user_listing_states_updated_at
   before update on user_listing_states
   for each row execute function update_updated_at();
+
+-- Scan reviews (submitted when user hits the 10-scan limit)
+create table if not exists scan_reviews (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references auth.users(id) on delete set null,
+  user_email text,
+  review text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table scan_reviews enable row level security;
+
+create policy "users can insert own scan reviews"
+  on scan_reviews for insert
+  with check (auth.uid() = user_id);
+
+create policy "service role can read all scan reviews"
+  on scan_reviews for select
+  using (true);
 
 -- Support messages
 create table if not exists support_messages (
