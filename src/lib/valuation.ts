@@ -57,6 +57,7 @@ export async function evaluateListing(params: {
 (2) SALVAGE/BRANDED TITLE: listing mentions salvage, rebuilt, junk, branded, or flood title — use 'salvage title'.
 (3) ENGINE ISSUES: explicit (blown engine, rod knock, head gasket, seized, needs engine) or implied (overheating, white smoke, burns oil, runs rough, misfires, won't start) — use 'engine issue'.
 (4) PARTS LISTING: listing is selling a car part or accessory (bed cap, bumper, wheels, engine, etc.) not an actual vehicle — use 'parts listing'.
+(5) DEALERSHIP/RESELLER: listing appears to be from a car dealer or reseller — templated sales copy, mentions "our inventory", "stop by our lot", "financing available", "call/text our team", multiple vehicles for sale, or any other sign it is not a private individual selling their own personal vehicle — use 'dealership'.
 `,
               },
               private_party_market_value: {
@@ -79,9 +80,7 @@ Even Toyota, Honda, and Lexus are subject to these caps — reliability reputati
 
 (5) NICHE/SLOW-MOVING VEHICLES: luxury brands (Mercedes, BMW, Audi), sports cars, and uncommon models have a narrower buyer pool on Marketplace. They take longer to sell and require price cuts to move. Compress the margin expectation accordingly vs. a high-demand economy car (Camry, Civic, Corolla, CR-V).
 
-(6) DEALER/RESELLER LISTINGS: if the listing appears to be from a dealer or reseller (templated sales copy, no personal reason for selling, mentions other inventory, reads like lot advertising), assume the car is already priced at or near its true market value with little room left — apply a 20–30% additional discount to the resale ceiling since flippers cannot expect to buy below market from another reseller.
-
-(7) LOW-DEMAND VEHICLES: hydrogen vehicles (Toyota Mirai, Hyundai Nexo) and early-gen EVs (BMW i3 pre-2018, early Nissan Leaf) have very limited buyer pools and slow sales velocity — apply a heavy 30–40% discount to any raw market estimate to reflect realistic street-level demand.
+(6) LOW-DEMAND VEHICLES: hydrogen vehicles (Toyota Mirai, Hyundai Nexo) and early-gen EVs (BMW i3 pre-2018, early Nissan Leaf) have very limited buyer pools and slow sales velocity — apply a heavy 30–40% discount to any raw market estimate to reflect realistic street-level demand.
 
 (6) VAGUE DESCRIPTION PENALTY: fewer than ~50 words with no mention of condition, history, or maintenance → treat as potential problem vehicle, apply 20–30% additional discount.
 
@@ -107,15 +106,15 @@ SKIP the listing (set skip_reason) if any of the following apply:
 - Salvage, rebuilt, branded, or flood title
 - Engine issues — explicit (blown engine, rod knock, head gasket) or implied (overheating, white smoke, runs rough, won't start)
 - Listing is selling a car PART or accessory, not the vehicle itself
+- DEALERSHIP/RESELLER: templated sales copy, mentions other inventory, financing available, "call our team", or any sign this is not a private individual selling their own car
 VALUATION RULES (for listings that pass the skip check):
 1. PESSIMISTIC REPAIR: any mentioned mechanical/electrical issue → use worst-case repair cost (OEM parts + shop labor). Issues compound.
 2. MILEAGE IS THE #1 DISCOUNT FACTOR — apply tiered discounts regardless of brand: 100–130k = -20–25%, 130–150k = -30–35%, 150–175k = -40–50% (max $2–3k profit), 175–200k = -50–60% (max $1–1.5k profit), 200k+ = -60–70% (max $500–1k profit). Toyota/Honda/Lexus reliability does NOT override these tiers.
 3. CASH FLOOR: reliable high-mileage vehicles (Toyota, Honda, Lexus) retain a floor value — recognize a micro-deal priced just under that floor.
 4. COSMETIC DISCOUNT: heavy paint fade, body damage, worn interior, or beater-grade appearance → 15–30% discount vs. a clean equivalent. Cosmetically rough cars only sell to bottom-of-market buyers at reduced prices.
 5. NICHE PENALTY: luxury brands, sports cars, and uncommon models have a smaller buyer pool and take longer to sell → compress margin expectations vs. high-demand economy cars (Camry, Civic, CR-V).
-6. DEALER/RESELLER DISCOUNT: if the listing looks like it's from a dealer or reseller (templated copy, no personal selling reason, mentions other inventory), assume it's already near true market value — apply an additional 20–30% discount to the resale ceiling.
-7. LOW-DEMAND VEHICLE DISCOUNT: hydrogen vehicles (Mirai, Nexo) and early-gen EVs (BMW i3 pre-2018, early Leaf) have very limited buyer pools — apply a 30–40% discount to any raw market estimate.
-6. VAGUE DESCRIPTION: fewer than ~50 words, no condition/history/maintenance info → treat as potential problem vehicle, apply 20–30% additional discount.
+6. LOW-DEMAND VEHICLE DISCOUNT: hydrogen vehicles (Mirai, Nexo) and early-gen EVs (BMW i3 pre-2018, early Leaf) have very limited buyer pools — apply a 30–40% discount to any raw market estimate.
+7. VAGUE DESCRIPTION: fewer than ~50 words, no condition/history/maintenance info → treat as potential problem vehicle, apply 20–30% additional discount.
 
 Estimate the actual completed private-party sale price — not KBB, not asking price. What would a real buyer actually pay today on Facebook Marketplace or Craigslist?
 
