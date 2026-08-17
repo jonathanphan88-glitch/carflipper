@@ -78,6 +78,7 @@ const CITY_SLUG_OVERRIDES: Record<string, string> = {
   "santa clara": "sanjose",
   "mountain view": "sanjose",
   "palo alto": "sanjose",
+  "milpitas": "109770902381915",
   // California — other
   "san diego": "sandiego",
   "sacramento": "sac",
