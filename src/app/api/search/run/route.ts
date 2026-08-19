@@ -154,7 +154,7 @@ async function processSearch(
       }
       const conditionText = [raw.title, raw.description].filter(Boolean).join(" ");
       const conditionLower = conditionText.toLowerCase();
-      const SALVAGE_PHRASES = ["salvage", "rebuilt title", "junk title", "branded title", "flood title"];
+      const SALVAGE_PHRASES = ["salvage", "salvaje", "rebuilt title", "junk title", "branded title", "flood title"];
       const matchedSalvage = SALVAGE_PHRASES.find((kw) => conditionLower.includes(kw));
       if (matchedSalvage) {
         console.log(`[search] skip (salvage - "${matchedSalvage}"):`, raw.title);
@@ -176,7 +176,7 @@ async function processSearch(
     console.log(`[search] pre-filter done. ${toEvaluateNew.length} new listings queued for LLM (${existingIds.size} already known, skipped)`);
 
     // Evaluate in parallel batches of 15
-    const BATCH_SIZE = 15;
+    const BATCH_SIZE = 20;
     for (let i = 0; i < toEvaluateNew.length; i += BATCH_SIZE) {
       const batch = toEvaluateNew.slice(i, i + BATCH_SIZE);
       await Promise.all(batch.map(async ({ raw, conditionText }) => {
