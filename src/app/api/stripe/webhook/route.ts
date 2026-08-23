@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const plan = session.metadata?.plan;
     if (!userId || !plan) return NextResponse.json({ ok: true });
 
-    const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+    const subscription = await stripe.subscriptions.retrieve(session.subscription as string) as unknown as { current_period_start: number; current_period_end: number };
     await serviceClient.from("user_settings").upsert({
       user_id: userId,
       stripe_customer_id: session.customer as string,
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (event.type === "customer.subscription.updated") {
-    const subscription = event.data.object as Stripe.Subscription;
+    const subscription = event.data.object as Stripe.Subscription & { current_period_start: number; current_period_end: number };
     const customerId = subscription.customer as string;
     const { data: settings } = await serviceClient
       .from("user_settings")
