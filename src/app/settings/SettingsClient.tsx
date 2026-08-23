@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Slider } from "@/components/ui/slider";
-import { CheckCircle, MapPin, DollarSign, Target, Bell, ChevronLeft } from "lucide-react";
+import { CheckCircle, MapPin, DollarSign, Target, Bell, ChevronLeft, CreditCard, Zap, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { UserSettings } from "@/lib/types";
 
@@ -53,6 +53,111 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+function SubscriptionSection() {
+  const [scanStatus, setScanStatus] = useState<{
+    scansUsed?: number; scanLimit?: number; unlimited?: boolean; tier?: string | null;
+  } | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/scan-status").then((r) => r.json()).then(setScanStatus).catch(() => {});
+  }, []);
+
+  async function handleManageBilling() {
+    setPortalLoading(true);
+    const res = await fetch("/api/stripe/portal", { method: "POST" });
+    if (res.ok) {
+      const { url } = await res.json();
+      window.location.href = url;
+    } else {
+      setPortalLoading(false);
+    }
+  }
+
+  const tierLabel = scanStatus?.tier === "premium" ? "Premium" : scanStatus?.tier === "pro" ? "Pro" : scanStatus?.tier === "allowlisted" ? "Admin" : "Free Trial";
+  const tierColor = scanStatus?.tier === "premium" ? "text-primary" : scanStatus?.tier === "pro" ? "text-sky-400" : "text-zinc-400";
+  const hasSub = scanStatus?.tier === "pro" || scanStatus?.tier === "premium";
+
+  return (
+    <div className="bg-zinc-700 border border-white/5 rounded-2xl overflow-hidden">
+      <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/5">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+              <CreditCard className="h-4 w-4" />
+            </div>
+            <h3 className="font-bold text-sm text-white">Subscription</h3>
+          </div>
+          <p className="text-xs text-zinc-500 leading-relaxed">Your current plan and scan usage.</p>
+        </div>
+        <div className="md:col-span-2 p-6 space-y-5">
+          {/* Plan badge */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-1">Current Plan</p>
+              <p className={`text-xl font-black ${tierColor}`}>{tierLabel}</p>
+            </div>
+            {!hasSub && (
+              <Link href="/pricing">
+                <button className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
+                  Upgrade <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </Link>
+            )}
+          </div>
+
+          {/* Scan usage */}
+          {scanStatus && (
+            <div>
+              <p className="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-2">Scan Usage</p>
+              {scanStatus.unlimited ? (
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-primary" />
+                  <span className="text-sm text-white font-semibold">Unlimited scans</span>
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-zinc-300">{scanStatus.scansUsed ?? 0} scans used</span>
+                    <span className="text-zinc-500">{scanStatus.scanLimit} {scanStatus.tier === "pro" ? "this month" : "total"}</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-white/[0.07] overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        (scanStatus.scansUsed ?? 0) >= (scanStatus.scanLimit ?? 0)
+                          ? "bg-red-500"
+                          : (scanStatus.scansUsed ?? 0) >= (scanStatus.scanLimit ?? 0) * 0.66
+                          ? "bg-amber-400"
+                          : "bg-primary"
+                      }`}
+                      style={{ width: `${Math.min(100, ((scanStatus.scansUsed ?? 0) / (scanStatus.scanLimit ?? 1)) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Manage billing */}
+          {hasSub && (
+            <div className="pt-2 border-t border-white/5">
+              <p className="text-xs text-zinc-500 mb-3">Manage your billing, update payment method, or cancel your subscription.</p>
+              <button
+                onClick={handleManageBilling}
+                disabled={portalLoading}
+                className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg border border-white/10 text-zinc-300 hover:text-white hover:border-white/20 disabled:opacity-50 transition-colors"
+              >
+                <CreditCard className="h-3.5 w-3.5" />
+                {portalLoading ? "Redirecting..." : "Manage billing"}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SettingsClient({ initialSettings }: SettingsClientProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
@@ -98,6 +203,8 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
   }
 
   return (
+    <div className="space-y-3">
+    <SubscriptionSection />
     <form onSubmit={handleSave} className="space-y-3">
 
       {/* Location */}
@@ -237,5 +344,6 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
         </div>
       </div>
     </form>
+    </div>
   );
 }

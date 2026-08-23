@@ -15,6 +15,12 @@ create table if not exists user_settings (
   min_score integer not null default 50,
   email_alerts_enabled boolean not null default true,
   scan_allowlisted boolean not null default false,
+  free_scan_limit integer not null default 3,
+  stripe_customer_id text,
+  subscription_tier text,
+  subscription_status text,
+  subscription_period_start timestamptz,
+  subscription_period_end timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

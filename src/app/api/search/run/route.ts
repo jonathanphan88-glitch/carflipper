@@ -46,16 +46,37 @@ export async function POST(request: NextRequest) {
     { onConflict: "user_id" }
   );
 
-  // Enforce 10-scan limit unless user is allowlisted
+  // Enforce scan limits based on subscription tier
   const allowlisted = settings?.scan_allowlisted === true;
+  const subscriptionStatus = settings?.subscription_status;
+  const subscriptionTier = settings?.subscription_tier;
+  const periodStart = settings?.subscription_period_start;
+
   if (!allowlisted) {
-    const { data: scanRows } = await supabase
-      .from("search_runs")
-      .select("id")
-      .eq("user_id", user.id);
-    const scanCount = scanRows?.length ?? 0;
-    if (scanCount >= 10) {
-      return NextResponse.json({ error: "scan_limit_reached", scansUsed: scanCount }, { status: 403 });
+    if (subscriptionStatus === "active" && subscriptionTier === "premium") {
+      // Premium: unlimited scans — no check needed
+    } else if (subscriptionStatus === "active" && subscriptionTier === "pro" && periodStart) {
+      // Pro: 15 scans per billing period
+      const { data: scanRows } = await supabase
+        .from("search_runs")
+        .select("id")
+        .eq("user_id", user.id)
+        .gte("triggered_at", periodStart);
+      const scanCount = scanRows?.length ?? 0;
+      if (scanCount >= 15) {
+        return NextResponse.json({ error: "scan_limit_reached", scansUsed: scanCount }, { status: 403 });
+      }
+    } else {
+      // No subscription: free trial (default 3 scans, or free_scan_limit if set)
+      const freeLimit = settings?.free_scan_limit ?? 3;
+      const { data: scanRows } = await supabase
+        .from("search_runs")
+        .select("id")
+        .eq("user_id", user.id);
+      const scanCount = scanRows?.length ?? 0;
+      if (scanCount >= freeLimit) {
+        return NextResponse.json({ error: "scan_limit_reached", scansUsed: scanCount }, { status: 403 });
+      }
     }
   }
 

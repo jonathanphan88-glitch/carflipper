@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,6 +63,11 @@ export function Navbar({ userEmail }: NavbarProps) {
           } />
           <DropdownMenuContent align="end" className="w-52 bg-zinc-700 border-white/10">
             <div className="px-2 py-2 text-xs text-zinc-500 truncate border-b border-white/5 mb-1">{userEmail}</div>
+            <DropdownMenuItem className="text-sm cursor-pointer rounded-lg">
+              <Link href="/settings" className="flex items-center w-full">
+                <Settings className="h-3.5 w-3.5 mr-2" />Settings & Billing
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleLogout}
               variant="destructive"
