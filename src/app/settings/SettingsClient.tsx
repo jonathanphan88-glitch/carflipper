@@ -23,7 +23,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-zinc-700 border border-white/5 rounded-2xl overflow-hidden">
+    <div className="bg-[#0f0f18] border border-white/[0.07] rounded-2xl overflow-hidden">
       <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/5">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-2">
@@ -79,7 +79,7 @@ function SubscriptionSection() {
   const hasSub = scanStatus?.tier === "pro" || scanStatus?.tier === "premium";
 
   return (
-    <div className="bg-zinc-700 border border-white/5 rounded-2xl overflow-hidden">
+    <div className="bg-[#0f0f18] border border-white/[0.07] rounded-2xl overflow-hidden">
       <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/5">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-2">
@@ -220,7 +220,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
             onChange={(e) => setLocation(e.target.value)}
             placeholder="e.g. Los Angeles, CA"
             required
-            className="w-full h-11 bg-zinc-600 border border-white/8 rounded-xl px-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+            className="w-full h-11 bg-[#1a1a26] border border-white/[0.08] rounded-xl px-4 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </Field>
 

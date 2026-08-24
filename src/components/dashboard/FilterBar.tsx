@@ -46,9 +46,10 @@ interface FilterBarProps {
   location: string;
   radius: number;
   onLocationChange: (location: string, radius: number) => void;
+  scanButton?: React.ReactNode;
 }
 
-export function FilterBar({ filters, onChange, location, radius, onLocationChange }: FilterBarProps) {
+export function FilterBar({ filters, onChange, location, radius, onLocationChange, scanButton }: FilterBarProps) {
   const [localLocation, setLocalLocation] = useState(location);
   const [localRadius, setLocalRadius] = useState(radius);
   const [makeOpen, setMakeOpen] = useState(false);
@@ -82,7 +83,7 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
     : `${filters.makes[0]} +${filters.makes.length - 1}`;
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-[oklch(0.16_0.007_265)] p-4 space-y-4">
+    <div className="rounded-2xl border border-white/[0.07] bg-[#0f0f18] p-4 space-y-4">
 
       {/* Scan settings row */}
       <div className="flex flex-wrap items-end gap-4 pb-4 border-b border-white/[0.06]">
@@ -114,6 +115,8 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
             }}
           />
         </div>
+
+        {scanButton && <div className="ml-auto">{scanButton}</div>}
 
       </div>
 
@@ -205,7 +208,7 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
             <SelectTrigger className="h-9 text-sm bg-white/[0.04] border-white/8 text-zinc-300 hover:bg-white/[0.07] transition-colors rounded-lg">
               <span>{SORT_LABELS[filters.sortBy]}</span>
             </SelectTrigger>
-            <SelectContent className="bg-zinc-900 border-white/10 rounded-xl">
+            <SelectContent className="bg-[#13131e] border-white/[0.08] rounded-xl">
               <SelectItem value="score_desc" className="text-sm text-zinc-300">Score: High → Low</SelectItem>
               <SelectItem value="score_asc" className="text-sm text-zinc-300">Score: Low → High</SelectItem>
               <SelectItem value="estimated_profit_desc" className="text-sm text-zinc-300">Profit: High → Low</SelectItem>
@@ -232,7 +235,7 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
             <ChevronDown className={`h-3 w-3 text-zinc-500 transition-transform ${makeOpen ? "rotate-180" : ""}`} />
           </button>
           {makeOpen && (
-            <div className="absolute top-full left-0 mt-1 z-50 w-48 max-h-64 overflow-y-auto bg-zinc-900 border border-white/10 rounded-xl py-1 shadow-2xl shadow-black/60">
+            <div className="absolute top-full left-0 mt-1 z-50 w-48 max-h-64 overflow-y-auto bg-[#13131e] border border-white/[0.08] rounded-xl py-1 shadow-2xl shadow-black/70">
               {ALL_MAKES.map((make) => {
                 const active = filters.makes.includes(make);
                 return (

@@ -138,8 +138,8 @@ export function SearchButton({ onSearchComplete, disabled, location, radius }: S
     <>
     {showLimitModal && (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-        <div className="w-full max-w-md rounded-2xl border border-white/[0.08] bg-zinc-900 shadow-2xl shadow-black/60 overflow-hidden">
-          <div className="px-6 py-5 border-b border-white/[0.06] bg-zinc-800/60">
+        <div className="w-full max-w-md rounded-2xl border border-white/[0.08] bg-[#0f0f18] shadow-2xl shadow-black/70 overflow-hidden">
+          <div className="px-6 py-5 border-b border-white/[0.06] bg-[#13131e]">
             <h2 className="text-lg font-bold text-white">Scan limit reached</h2>
             <p className="text-sm text-zinc-400 mt-1">You've used all your free trial scans.</p>
           </div>

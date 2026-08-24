@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { ListingCard } from "@/components/dashboard/ListingCard";
 import { SearchButton } from "@/components/dashboard/SearchButton";
 import { FilterBar, type Filters } from "@/components/dashboard/FilterBar";
-import { ChevronLeft, ChevronRight, Flag, Car, MapPin, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flag, Car, Download } from "lucide-react";
 import type { ListingWithState, ListingStatus, UserSettings } from "@/lib/types";
 import type { FlaggedListing } from "@/lib/flaggedStore";
 import { exportListingsPdf } from "@/lib/exportPdf";
@@ -111,50 +111,14 @@ export function DashboardClient({ initialSettings }: DashboardClientProps) {
   return (
     <div className="space-y-5">
 
-      {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-zinc-900 via-zinc-900 to-violet-950/30 p-6 md:p-8">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-primary/8 blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 h-48 w-48 rounded-full bg-violet-700/6 blur-3xl" />
-        </div>
-
-        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/15 ring-1 ring-primary/25">
-                <Car className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-black tracking-tight text-white leading-none">CarFlip</h1>
-                <p className="text-xs text-zinc-500 mt-0.5 font-medium">Facebook Marketplace · Auto Deals</p>
-              </div>
-            </div>
-
-            <p className="text-sm text-zinc-400 max-w-sm leading-relaxed">
-              Scan local listings, score deals by profit potential, and build your flip pipeline.
-            </p>
-
-            <div className="flex items-center gap-2 flex-wrap">
-              {hasLocation ? (
-                <div className="flex items-center gap-1.5 rounded-full bg-white/[0.06] px-3 py-1 ring-1 ring-white/[0.08]">
-                  <MapPin className="h-3 w-3 text-zinc-400" />
-                  <span className="text-xs font-medium text-zinc-300">{currentLocation} · {currentRadius}mi</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 ring-1 ring-amber-500/20">
-                  <MapPin className="h-3 w-3 text-amber-400" />
-                  <span className="text-xs font-medium text-amber-300">Set location below to scan</span>
-                </div>
-              )}
-              {activeTab !== "flagged" && total > 0 && (
-                <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 ring-1 ring-emerald-500/20">
-                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  <span className="text-xs font-semibold text-emerald-300">{total} listing{total !== 1 ? "s" : ""}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
+      {/* Filters + scan */}
+      <FilterBar
+        filters={filters}
+        onChange={(f) => { setFilters(f); setPage(1); }}
+        location={currentLocation}
+        radius={currentRadius}
+        onLocationChange={(loc, rad) => { setCurrentLocation(loc); setCurrentRadius(rad); }}
+        scanButton={
           <SearchButton
             disabled={!hasLocation}
             location={currentLocation}
@@ -165,40 +129,39 @@ export function DashboardClient({ initialSettings }: DashboardClientProps) {
               setScanCount((c) => c + 1);
             }}
           />
-        </div>
-      </div>
-
-      {/* Filters */}
-      <FilterBar
-        filters={filters}
-        onChange={(f) => { setFilters(f); setPage(1); }}
-        location={currentLocation}
-        radius={currentRadius}
-        onLocationChange={(loc, rad) => { setCurrentLocation(loc); setCurrentRadius(rad); }}
+        }
       />
 
       {/* Tabs + export */}
       <div className="flex items-center justify-between gap-4">
-      <div className="flex items-center gap-0.5 rounded-xl bg-white/[0.03] p-1 ring-1 ring-white/[0.06] w-fit">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => { setActiveTab(tab.id); setPage(1); }}
-            className={`relative px-4 py-1.5 text-sm font-semibold rounded-lg transition-all ${
-              activeTab === tab.id
-                ? "bg-white/[0.1] text-white shadow-sm"
-                : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04]"
-            }`}
-          >
-            {tab.label}
-            {tab.id === "flagged" && flagged.length > 0 && (
-              <span className="ml-1.5 text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full font-bold">
-                {flagged.length}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-0.5 rounded-xl bg-white/[0.03] p-1 ring-1 ring-white/[0.06] w-fit">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => { setActiveTab(tab.id); setPage(1); }}
+                className={`relative px-4 py-1.5 text-sm font-semibold rounded-lg transition-all ${
+                  activeTab === tab.id
+                    ? "bg-white/[0.1] text-white shadow-sm"
+                    : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04]"
+                }`}
+              >
+                {tab.label}
+                {tab.id === "flagged" && flagged.length > 0 && (
+                  <span className="ml-1.5 text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full font-bold">
+                    {flagged.length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+          {activeTab !== "flagged" && total > 0 && (
+            <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 ring-1 ring-emerald-500/20">
+              <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span className="text-xs font-semibold text-emerald-300">{total} listing{total !== 1 ? "s" : ""}</span>
+            </div>
+          )}
+        </div>
 
       {activeTab !== "flagged" && total > 0 && (
         <button

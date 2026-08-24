@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, Bookmark, X, RotateCcw, Gauge, MapPin, TrendingUp, TrendingDown } from "lucide-react";
+import { ExternalLink, Bookmark, X, RotateCcw, Gauge, MapPin, TrendingUp, TrendingDown, Car, ChevronDown } from "lucide-react";
 import type { ListingWithState, ListingStatus } from "@/lib/types";
 
 interface ListingCardProps {
@@ -10,10 +10,10 @@ interface ListingCardProps {
 }
 
 function scoreMeta(score: number | null) {
-  if (score === null) return { label: "—", textColor: "text-zinc-400", ringColor: "ring-zinc-700", bgColor: "bg-zinc-800/60", badgeBg: "bg-zinc-800", badgeText: "text-zinc-500", badgeRing: "ring-white/5", tier: "none" };
-  if (score >= 75) return { label: "Great Deal", textColor: "text-emerald-300", ringColor: "ring-emerald-500/50", bgColor: "bg-emerald-500/10", badgeBg: "bg-emerald-500/12", badgeText: "text-emerald-300", badgeRing: "ring-emerald-500/25", tier: "great" };
-  if (score >= 50) return { label: "Fair Deal", textColor: "text-sky-300", ringColor: "ring-sky-500/50", bgColor: "bg-sky-500/10", badgeBg: "bg-sky-500/12", badgeText: "text-sky-300", badgeRing: "ring-sky-500/25", tier: "fair" };
-  return { label: "Weak Deal", textColor: "text-zinc-400", ringColor: "ring-zinc-600/50", bgColor: "bg-zinc-800/60", badgeBg: "bg-zinc-800", badgeText: "text-zinc-500", badgeRing: "ring-white/5", tier: "weak" };
+  if (score === null) return { label: "—", textColor: "text-zinc-500", ringColor: "ring-zinc-700/50", bgColor: "bg-zinc-900/60", badgeBg: "bg-zinc-900", badgeText: "text-zinc-500", badgeRing: "ring-white/5", tier: "none" };
+  if (score >= 75) return { label: "Great Deal", textColor: "text-emerald-300", ringColor: "ring-emerald-500/50", bgColor: "bg-emerald-500/10", badgeBg: "bg-emerald-500/10", badgeText: "text-emerald-300", badgeRing: "ring-emerald-500/25", tier: "great" };
+  if (score >= 50) return { label: "Fair Deal", textColor: "text-sky-300", ringColor: "ring-sky-500/50", bgColor: "bg-sky-500/10", badgeBg: "bg-sky-500/10", badgeText: "text-sky-300", badgeRing: "ring-sky-500/25", tier: "fair" };
+  return { label: "Weak Deal", textColor: "text-amber-400", ringColor: "ring-amber-500/30", bgColor: "bg-amber-500/8", badgeBg: "bg-amber-500/10", badgeText: "text-amber-400", badgeRing: "ring-amber-500/20", tier: "weak" };
 }
 
 export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
@@ -27,6 +27,7 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
   const displayTitle = title ?? [year, make, model].filter(Boolean).join(" ") ?? "Unknown Vehicle";
   const imageUrl = images?.[0];
   const [imgError, setImgError] = useState(false);
+  const [analysisExpanded, setAnalysisExpanded] = useState(false);
   const profitPositive = estimated_profit !== null && estimated_profit > 0;
   const listedAgo = listed_at ? formatRelativeTime(new Date(listed_at)) : null;
   const sm = scoreMeta(score);
@@ -38,7 +39,7 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
     : "border-white/[0.07] hover:border-white/[0.12]";
 
   return (
-    <div className={`group relative flex overflow-hidden rounded-2xl border bg-[oklch(0.155_0.008_265)] transition-all duration-200 hover:shadow-2xl hover:shadow-black/50 hover:-translate-y-px ${borderColor}`}>
+    <div className={`group relative flex overflow-hidden rounded-2xl border bg-[#0f0f18] transition-all duration-200 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-px ${borderColor}`}>
 
       {/* Image */}
       <div className="relative w-60 shrink-0 overflow-hidden bg-zinc-900">
@@ -51,8 +52,8 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-4xl opacity-10 select-none bg-gradient-to-br from-zinc-800 to-zinc-900">
-            🚗
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#0f0f1a] to-[#080810]">
+            <Car className="h-14 w-14 text-white/[0.06]" strokeWidth={1} />
           </div>
         )}
 
@@ -148,9 +149,20 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
 
         {/* AI justification */}
         {justification && (
-          <p className="text-sm text-zinc-400 leading-relaxed border-l-2 border-zinc-700 pl-3 italic">
-            {justification}
-          </p>
+          <div className="border-l-2 border-zinc-800 pl-3">
+            <p className={`text-sm text-zinc-400 leading-relaxed ${analysisExpanded ? "" : "line-clamp-2"}`}>
+              {justification}
+            </p>
+            {justification.length > 140 && (
+              <button
+                onClick={() => setAnalysisExpanded(!analysisExpanded)}
+                className="flex items-center gap-1 text-xs text-zinc-600 hover:text-zinc-400 mt-1 transition-colors"
+              >
+                {analysisExpanded ? "See less" : "See full analysis"}
+                <ChevronDown className={`h-3 w-3 transition-transform ${analysisExpanded ? "rotate-180" : ""}`} />
+              </button>
+            )}
+          </div>
         )}
 
         {/* Actions */}

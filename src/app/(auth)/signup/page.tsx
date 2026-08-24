@@ -38,9 +38,9 @@ const [error, setError] = useState<string | null>(null);
   }
 
   return (
-    <div className="min-h-screen bg-zinc-800 flex">
+    <div className="min-h-screen bg-[#09090f] flex">
       {/* Left panel */}
-      <div className="hidden lg:flex flex-col justify-between w-96 shrink-0 bg-zinc-700 border-r border-white/5 p-10">
+      <div className="hidden lg:flex flex-col justify-between w-96 shrink-0 bg-[#0f0f18] border-r border-white/[0.06] p-10">
         <div className="font-black text-xl tracking-tight">
           <span className="text-primary">Car</span>
           <span className="text-white">Flip</span>
@@ -65,7 +65,7 @@ const [error, setError] = useState<string | null>(null);
           </ul>
         </div>
 
-        <div className="p-4 rounded-xl bg-zinc-600/50 border border-white/5">
+        <div className="p-4 rounded-xl bg-[#09090f] border border-white/[0.06]">
           <div className="text-xs text-zinc-500 mb-1">Average deal found</div>
           <div className="text-2xl font-black text-emerald-400">+$2,800</div>
           <div className="text-xs text-zinc-600 mt-0.5">estimated profit per listing</div>
@@ -76,8 +76,8 @@ const [error, setError] = useState<string | null>(null);
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
           <div className="lg:hidden font-black text-xl tracking-tight mb-8">
-            <span className="text-primary">Flip</span>
-            <span className="text-white">Finder</span>
+            <span className="text-primary">Car</span>
+            <span className="text-white">Flip</span>
           </div>
 
           <div className="mb-8">
@@ -106,7 +106,7 @@ const [error, setError] = useState<string | null>(null);
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="w-full h-11 bg-zinc-700 border border-white/8 rounded-xl px-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                className="w-full h-11 bg-[#1a1a26] border border-white/[0.08] rounded-xl px-4 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
             <div className="space-y-1.5">
@@ -118,7 +118,7 @@ const [error, setError] = useState<string | null>(null);
                 placeholder="Min. 8 characters"
                 minLength={8}
                 required
-                className="w-full h-11 bg-zinc-700 border border-white/8 rounded-xl px-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                className="w-full h-11 bg-[#1a1a26] border border-white/[0.08] rounded-xl px-4 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
 
@@ -136,13 +136,13 @@ const [error, setError] = useState<string | null>(null);
               <div className="w-full border-t border-white/8" />
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-zinc-800 px-3 text-xs text-zinc-500">or</span>
+              <span className="bg-[#09090f] px-3 text-xs text-zinc-600">or</span>
             </div>
           </div>
 
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 h-11 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold transition-all"
+            className="w-full flex items-center justify-center gap-3 h-11 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.07] text-white text-sm font-semibold transition-all"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
