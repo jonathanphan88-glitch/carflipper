@@ -312,6 +312,7 @@ export async function runFacebookMarketplaceScraper(params: {
   priceMin: number;
   priceMax: number;
   radiusMiles: number;
+  resultsLimit?: number;
 }): Promise<string> {
   const token = process.env.APIFY_API_TOKEN!;
   const actorId = process.env.APIFY_ACTOR_ID!.replace("/", "~");
@@ -325,7 +326,7 @@ export async function runFacebookMarketplaceScraper(params: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         startUrls: [{ url }],
-        resultsLimit: 120,
+        resultsLimit: params.resultsLimit ?? 80,
         includeListingDetails: true,
       }),
     }

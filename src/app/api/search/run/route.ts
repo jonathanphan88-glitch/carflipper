@@ -134,11 +134,13 @@ async function processSearch(
       rawListings = MOCK_APIFY_RESULTS.map(normalizeForMock);
       console.log("[search] mock listings loaded:", rawListings.length);
     } else {
+      const isPaidUser = subscriptionStatus === "active" && (subscriptionTier === "pro" || subscriptionTier === "premium");
       const apifyRunId = await runFacebookMarketplaceScraper({
         location: settings.location,
         priceMin: settings.price_min,
         priceMax: settings.price_max,
         radiusMiles: settings.radius_miles,
+        resultsLimit: isPaidUser ? 120 : 80,
       });
 
       // Poll for completion (max 5 minutes)

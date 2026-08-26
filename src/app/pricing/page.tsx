@@ -14,6 +14,7 @@ const PLANS = [
     scans: "15 scans / month",
     features: [
       "15 scans per month",
+      "120 listings per scan",
       "AI deal scoring (0–100)",
       "PDF export",
       "Save & dismiss listings",
@@ -29,6 +30,7 @@ const PLANS = [
     scans: "Unlimited scans",
     features: [
       "Unlimited scans",
+      "120 listings per scan",
       "AI deal scoring (0–100)",
       "PDF export",
       "Save & dismiss listings",
