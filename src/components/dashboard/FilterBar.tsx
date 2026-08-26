@@ -53,6 +53,7 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
   const [localLocation, setLocalLocation] = useState(location);
   const [localRadius, setLocalRadius] = useState(radius);
   const [makeOpen, setMakeOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const makeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -85,26 +86,26 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
   return (
     <div className="rounded-2xl border border-white/[0.07] bg-[#0f0f18] p-4 space-y-4">
 
-      {/* Scan settings row */}
-      <div className="flex flex-wrap items-end gap-4 pb-4 border-b border-white/[0.06]">
+      {/* Always-visible top row: location + radius + scan button */}
+      <div className="flex flex-wrap items-end gap-3">
 
-        <div className="space-y-1.5 w-56">
-          <span className="text-sm font-semibold uppercase tracking-wider text-zinc-500 flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5" />Location
+        <div className="space-y-1.5 flex-1 min-w-[160px]">
+          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500 flex items-center gap-1.5">
+            <MapPin className="h-3 w-3" />Location
           </span>
           <input
             type="text"
             value={localLocation}
             onChange={(e) => { setLocalLocation(e.target.value); onLocationChange(e.target.value, localRadius); }}
-            placeholder="e.g. San Jose, CA or 90007"
+            placeholder="City or ZIP code"
             className="w-full h-9 bg-white/[0.05] border border-white/10 rounded-lg px-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
           />
         </div>
 
-        <div className="space-y-2.5 w-44">
+        <div className="space-y-2 w-36 hidden sm:block">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold uppercase tracking-wider text-zinc-500">Radius</span>
-            <span className="text-sm font-mono font-medium text-zinc-300">{localRadius} mi</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Radius</span>
+            <span className="text-xs font-mono font-medium text-zinc-300">{localRadius} mi</span>
           </div>
           <Slider
             min={10} max={200} step={10}
@@ -116,12 +117,38 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
           />
         </div>
 
-        {scanButton && <div className="ml-auto">{scanButton}</div>}
+        <button
+          onClick={() => setFiltersOpen((o) => !o)}
+          className="flex items-center gap-1.5 h-9 px-3 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs font-semibold text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors sm:hidden"
+        >
+          Filters <ChevronDown className={`h-3 w-3 transition-transform ${filtersOpen ? "rotate-180" : ""}`} />
+        </button>
+
+        {scanButton && <div className="ml-auto sm:ml-0">{scanButton}</div>}
 
       </div>
 
+      {/* Radius slider — mobile only, shown below location */}
+      <div className="space-y-2 sm:hidden">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Radius</span>
+          <span className="text-xs font-mono font-medium text-zinc-300">{localRadius} mi</span>
+        </div>
+        <Slider
+          min={10} max={200} step={10}
+          value={[localRadius]}
+          onValueChange={(v) => {
+            const arr = Array.isArray(v) ? v : [v];
+            if (arr[0] !== undefined) { setLocalRadius(arr[0]); onLocationChange(localLocation, arr[0]); }
+          }}
+        />
+      </div>
+
+      {/* Collapsible filters — always visible on sm+, toggle on mobile */}
+      <div className={`${filtersOpen ? "flex" : "hidden"} sm:flex flex-col gap-4 pt-3 border-t border-white/[0.06]`}>
+
       {/* Display filters row */}
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-6">
 
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
@@ -263,6 +290,8 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
           </button>
         )}
       </div>
+
+      </div>{/* end collapsible */}
     </div>
   );
 }

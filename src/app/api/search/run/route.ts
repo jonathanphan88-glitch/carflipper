@@ -183,6 +183,14 @@ async function processSearch(
         skippedSalvage++;
         continue;
       }
+      const AUCTION_PHRASES = ["auction", "auctioned", "auctioning", "at auction"];
+      const matchedAuction = AUCTION_PHRASES.find((kw) => conditionLower.includes(kw));
+      if (matchedAuction) {
+        console.log(`[search] skip (auction - "${matchedAuction}"):`, raw.title);
+        addFlagged(runId, { title: raw.title, price: raw.price, url: raw.url, reason: "auction" });
+        skippedSalvage++;
+        continue;
+      }
       toEvaluate.push({ raw, conditionText });
     }
 

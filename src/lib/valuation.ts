@@ -58,6 +58,7 @@ export async function evaluateListing(params: {
 (3) ENGINE ISSUES: explicit (blown engine, rod knock, head gasket, seized, needs engine) or implied (overheating, white smoke, burns oil, runs rough, misfires, won't start) — use 'engine issue'.
 (4) PARTS LISTING: listing is selling a car part or accessory (bed cap, bumper, wheels, engine, etc.) not an actual vehicle — use 'parts listing'.
 (5) DEALERSHIP/RESELLER: listing appears to be from a car dealer or reseller — templated sales copy, mentions "our inventory", "stop by our lot", "financing available", "call/text our team", multiple vehicles for sale, or any other sign it is not a private individual selling their own personal vehicle — use 'dealership'.
+(6) AUCTION: listing mentions auction, auctioned, auction house, or any variation — use 'auction'.
 `,
               },
               private_party_market_value: {
@@ -107,6 +108,7 @@ SKIP the listing (set skip_reason) if any of the following apply:
 - Engine issues — explicit (blown engine, rod knock, head gasket) or implied (overheating, white smoke, runs rough, won't start)
 - Listing is selling a car PART or accessory, not the vehicle itself
 - DEALERSHIP/RESELLER: templated sales copy, mentions other inventory, financing available, "call our team", or any sign this is not a private individual selling their own car
+- AUCTION: listing mentions auction, auctioned, or any variation
 VALUATION RULES (for listings that pass the skip check):
 1. PESSIMISTIC REPAIR: any mentioned mechanical/electrical issue → use worst-case repair cost (OEM parts + shop labor). Issues compound.
 2. MILEAGE IS THE #1 DISCOUNT FACTOR — apply tiered discounts regardless of brand: 100–130k = -20–25%, 130–150k = -30–35%, 150–175k = -40–50% (max $2–3k profit), 175–200k = -50–60% (max $1–1.5k profit), 200k+ = -60–70% (max $500–1k profit). Toyota/Honda/Lexus reliability does NOT override these tiers.

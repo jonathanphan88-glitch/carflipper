@@ -39,10 +39,10 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
     : "border-white/[0.07] hover:border-white/[0.12]";
 
   return (
-    <div className={`group relative flex overflow-hidden rounded-2xl border bg-[#0f0f18] transition-all duration-200 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-px ${borderColor}`}>
+    <div className={`group relative flex flex-col sm:flex-row overflow-hidden rounded-2xl border bg-[#0f0f18] transition-all duration-200 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-px ${borderColor}`}>
 
       {/* Image */}
-      <div className="relative w-60 shrink-0 overflow-hidden bg-zinc-900">
+      <div className="relative h-48 sm:h-auto sm:w-56 shrink-0 overflow-hidden bg-zinc-900">
         {imageUrl && !imgError ? (
           <img
             src={imageUrl}
@@ -78,7 +78,7 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col min-w-0 p-5 gap-3.5">
+      <div className="flex flex-1 flex-col min-w-0 p-4 sm:p-5 gap-3">
 
         {/* Title row */}
         <div className="flex items-start justify-between gap-3">
@@ -98,16 +98,16 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
               {listedAgo && <span className="text-sm text-zinc-600">{listedAgo}</span>}
             </div>
           </div>
-          <span className={`shrink-0 text-sm font-bold px-3 py-1.5 rounded-lg ring-1 ${sm.badgeBg} ${sm.badgeText} ${sm.badgeRing}`}>
+          <span className={`shrink-0 text-xs font-bold px-2.5 py-1.5 rounded-lg ring-1 ${sm.badgeBg} ${sm.badgeText} ${sm.badgeRing}`}>
             {sm.label}
           </span>
         </div>
 
         {/* Pricing row */}
-        <div className="flex items-end gap-6 flex-wrap">
+        <div className="flex items-end gap-4 flex-wrap">
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold text-zinc-600 mb-1">Asking Price</p>
-            <p className="text-3xl font-black text-white tracking-tight leading-none">
+            <p className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none">
               {price !== null ? `$${price.toLocaleString()}` : "—"}
             </p>
           </div>
@@ -115,14 +115,14 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold text-zinc-600 mb-1">Market Value</p>
             {market_value ? (
-              <p className="text-xl font-bold text-zinc-300">${market_value.toLocaleString()}</p>
+              <p className="text-lg sm:text-xl font-bold text-zinc-300">${market_value.toLocaleString()}</p>
             ) : (
               <p className="text-sm text-zinc-600 italic leading-none pt-1">Unable to estimate</p>
             )}
           </div>
 
           {estimated_profit !== null ? (
-            <div className={`ml-auto flex items-center gap-2.5 px-4 py-2.5 rounded-xl ${
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-xl sm:ml-auto ${
               profitPositive
                 ? "bg-emerald-500/10 ring-1 ring-emerald-500/25"
                 : "bg-red-500/10 ring-1 ring-red-500/25"
@@ -132,13 +132,13 @@ export function ListingCard({ listing, onStatusChange }: ListingCardProps) {
                 : <TrendingDown className="h-4 w-4 text-red-400 shrink-0" />}
               <div>
                 <p className="text-[10px] uppercase tracking-widest font-semibold text-zinc-600 leading-none mb-1">Est. Profit</p>
-                <p className={`text-xl font-black leading-none ${profitPositive ? "text-emerald-300" : "text-red-400"}`}>
+                <p className={`text-lg sm:text-xl font-black leading-none ${profitPositive ? "text-emerald-300" : "text-red-400"}`}>
                   {profitPositive ? "+" : ""}${estimated_profit.toLocaleString()}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="ml-auto flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-zinc-800/40 ring-1 ring-white/[0.06]">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-800/40 ring-1 ring-white/[0.06]">
               <div>
                 <p className="text-[10px] uppercase tracking-widest font-semibold text-zinc-600 leading-none mb-1">Est. Profit</p>
                 <p className="text-sm text-zinc-600 italic">N/A</p>
