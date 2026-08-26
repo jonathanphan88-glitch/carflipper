@@ -53,7 +53,7 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
   const [localLocation, setLocalLocation] = useState(location);
   const [localRadius, setLocalRadius] = useState(radius);
   const [makeOpen, setMakeOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(true);
   const makeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
