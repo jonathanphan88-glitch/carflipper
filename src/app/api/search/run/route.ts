@@ -209,7 +209,7 @@ async function processSearch(
     console.log(`[search] pre-filter done. ${toEvaluateNew.length} new listings queued for LLM (${existingIds.size} already known, skipped)`);
 
     // Evaluate in parallel batches of 15
-    const BATCH_SIZE = 20;
+    const BATCH_SIZE = 25;
     for (let i = 0; i < toEvaluateNew.length; i += BATCH_SIZE) {
       const batch = toEvaluateNew.slice(i, i + BATCH_SIZE);
       await Promise.all(batch.map(async ({ raw, conditionText }) => {
