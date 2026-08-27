@@ -111,6 +111,8 @@ async function processSearch(
     price_min: number;
     price_max: number;
     min_profit: number;
+    subscription_status?: string;
+    subscription_tier?: string;
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   serviceClient: any
@@ -134,7 +136,7 @@ async function processSearch(
       rawListings = MOCK_APIFY_RESULTS.map(normalizeForMock);
       console.log("[search] mock listings loaded:", rawListings.length);
     } else {
-      const isPaidUser = subscriptionStatus === "active" && (subscriptionTier === "pro" || subscriptionTier === "premium");
+      const isPaidUser = settings.subscription_status === "active" && (settings.subscription_tier === "pro" || settings.subscription_tier === "premium");
       const apifyRunId = await runFacebookMarketplaceScraper({
         location: settings.location,
         priceMin: settings.price_min,
