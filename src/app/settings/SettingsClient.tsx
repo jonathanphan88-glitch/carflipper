@@ -213,12 +213,12 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
         title="Search Location"
         description="Where should we scan Facebook Marketplace for deals?"
       >
-        <Field label="City or ZIP code">
+        <Field label="ZIP code">
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder="e.g. Los Angeles, CA"
+            placeholder="e.g. 90210"
             required
             className="w-full h-11 bg-[#1a1a26] border border-white/[0.08] rounded-xl px-4 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
           />

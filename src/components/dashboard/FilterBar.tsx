@@ -97,7 +97,7 @@ export function FilterBar({ filters, onChange, location, radius, onLocationChang
             type="text"
             value={localLocation}
             onChange={(e) => { setLocalLocation(e.target.value); onLocationChange(e.target.value, localRadius); }}
-            placeholder="City or ZIP code"
+            placeholder="ZIP code"
             className="w-full h-9 bg-white/[0.05] border border-white/10 rounded-lg px-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
           />
         </div>
