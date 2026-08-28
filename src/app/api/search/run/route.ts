@@ -142,7 +142,7 @@ async function processSearch(
         priceMin: settings.price_min,
         priceMax: settings.price_max,
         radiusMiles: settings.radius_miles,
-        resultsLimit: isPaidUser ? 120 : 80,
+        resultsLimit: isPaidUser ? 120 : 90,
       });
 
       // Poll for completion (max 5 minutes)
